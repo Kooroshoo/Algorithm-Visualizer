@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>String Algorithm Visualizer</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/editor/editor.main.min.css">
+
+  <style>
+      :root {
+          --primary: #6c5ce7;
+          --secondary: #a8a5e6;
+          --background: #1a1a2e;
+          --surface: #16213e;
+          --highlight: #ff6b6b;
+      }
+
+      body {
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: var(--background);
+          color: white;
+      }
+
+      header {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          padding: 1rem 2rem;
+          font-size: 1.5rem;
+          font-weight: bold;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+
+      #main-container {
+          display: flex;
+          flex: 1;
+          gap: 20px;
+          padding: 20px;
+      }
+
+      #editor-container, #output-container {
+          flex: 1;
+          background: var(--surface);
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      #editor {
+          height: 400px !important;
+          border: 1px solid #444;
+          border-radius: 4px;
+          margin-top: 10px;
+      }
+
+      #stringContainer {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 200px;
+          font-size: 2rem;
+          letter-spacing: 8px;
+          background: var(--surface);
+          border-radius: 12px;
+          margin: 20px 0;
+          padding: 20px;
+          flex-wrap: wrap;
+      }
+
+      .char-box {
+          display: inline-block;
+          padding: 10px;
+          margin: 5px;
+          min-width: 40px;
+          text-align: center;
+          background: var(--primary);
+          border-radius: 6px;
+          transition: all 0.3s ease;
+          position: relative;
+      }
+
+      .char-box.comparing {
+          background: var(--highlight);
+          transform: scale(1.2);
+      }
+
+      .char-box.match {
+          background: #4CAF50;
+      }
+
+      .char-box.mismatch {
+          background: #f44336;
+      }
+
+      .index-label {
+          position: absolute;
+          bottom: -25px;
+          font-size: 12px;
+          color: rgba(255,255,255,0.8);
+      }
+
+      #controls {
+          display: flex;
+          gap: 15px;
+          align-items: center;
+          padding: 15px;
+          background: var(--surface);
+          border-radius: 8px;
+          margin-bottom: 20px;
+      }
+
+      button {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          border: none;
+          border-radius: 6px;
+          color: white;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+      }
+
+      button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+      }
+
+      input[type="text"] {
+          padding: 8px 12px;
+          background: var(--background);
+          border: 1px solid var(--primary);
+          border-radius: 6px;
+          color: white;
+          width: 200px;
+      }
+
+      #speedControl {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          background: rgba(255,255,255,0.05);
+          padding: 8px 15px;
+          border-radius: 6px;
+      }
+
+      input[type="range"] {
+          width: 120px;
+          height: 4px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 2px;
+          -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 16px;
+          height: 16px;
+          background: var(--primary);
+          border-radius: 50%;
+          cursor: pointer;
+      }
+
+      #console {
+          background: var(--background);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: #00ff9d;
+          padding: 15px;
+          border-radius: 8px;
+          font-family: 'Fira Code', monospace;
+          font-size: 14px;
+      }
+
+      h2 {
+          margin-top: 0;
+          color: var(--secondary);
+      }
+  </style>
+</head>
+<body>
+  <header>
+      String Algorithm Visualizer
+  </header>
+
+  <div id="main-container">
+      <div id="editor-container">
+          <h2>Write Your Algorithm</h2>
+          <select id="language-selector">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+          </select>
+          <select id="algorithm-selector">
+              <option value="palindrome">Palindrome Check</option>
+              <option value="reverse">String Reversal</option>
+              <option value="substring">Substring Search</option>
+              <option value="anagram">Anagram Check</option>
+              <option value="caesar">Caesar Cipher</option>
+          </select>
+          <div id="editor"></div>
+          <button id="run-code">Run Code</button>
+      </div>
+
+      <div id="output-container">
+          <div id="controls">
+              <div id="generate-container">
+                  <input type="text" id="input-string" placeholder="Enter string...">
+                  <button id="generate">Generate Random</button>
+              </div>
+              <div id="speedControl">
+                  <label for="speed">Speed:</label>
+                  <input type="range" id="speed" min="50" max="1000" step="50" value="500">
+              </div>
+          </div>
+          <div id="stringContainer"></div>
+          <div id="console"></div>
+      </div>
+  </div>
+
+  <script>
+let currentString = "";
+const stringContainer = document.getElementById('stringContainer');
+const consoleOutput = document.getElementById('console');
+const speedControl = document.getElementById('speed');
+let editor;
+let speed = 500;
+let pyodideInstance;
+
+const algorithms = {
+    javascript: {
+        palindrome: `async function checkPalindrome(str) {
+    let left = 0;
+    let right = str.length - 1;
+    
+    while (left < right) {
+        await visualizeStep(str, [left, right], \`Comparing \${str[left]} and \${str[right]}\`);
+        if (str[left] !== str[right]) {
+            await visualizeStep(str, [left, right], "Mismatch found - not a palindrome", true);
+            return false;
+        }
+        left++;
+        right--;
+    }
+    await visualizeStep(str, [], "All characters match - palindrome!");
+    return true;
+}
+checkPalindrome(currentString);`,
+
+        reverse: `async function reverseString(str) {
+    const arr = str.split('');
+    let left = 0;
+    let right = arr.length - 1;
+    
+    while (left < right) {
+        await visualizeStep(arr.join(''), [left, right], \`Swapping \${arr[left]} and \${arr[right]}\`);
+        [arr[left], arr[right]] = [arr[right], arr[left]];
+        left++;
+        right--;
+    }
+    await visualizeStep(arr.join(''), [], "String reversed!");
+    return arr.join('');
+}
+reverseString(currentString);`,
+
+        substring: `async function findSubstring(str) {
+    const pattern = "abc";
+    let comparisons = 0;
+    
+    for (let i = 0; i <= str.length - pattern.length; i++) {
+        let match = true;
+        for (let j = 0; j < pattern.length; j++) {
+            comparisons++;
+            await visualizeStep(str, [i + j], \`Comparing \${str[i + j]} with pattern[\${j}]\`);
+            if (str[i + j] !== pattern[j]) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            await visualizeStep(str, Array.from({length: pattern.length}, (_, k) => i + k), "Pattern found!");
+            return i;
+        }
+    }
+    await visualizeStep(str, [], "Pattern not found");
+    return -1;
+}
+findSubstring(currentString);`
+    },
+    python: {
+        palindrome: `async def check_palindrome(s):
+    left = 0
+    right = len(s) - 1
+    
+    while left < right:
+        await visualize_step(s, [left, right], f"Comparing {s[left]} and {s[right]}")
+        if s[left] != s[right]:
+            await visualize_step(s, [left, right], "Mismatch found - not a palindrome", True)
+            return False
+        left += 1
+        right -= 1
+    await visualize_step(s, [], "All characters match - palindrome!")
+    return True
+await check_palindrome(current_string)`,
+
+        anagram: `async def is_anagram(s1, s2):
+    count = [0] * 256
+    await visualize_step(s1 + " | " + s2, [], "Checking anagram...")
+    
+    for c in s1:
+        count[ord(c)] += 1
+    for c in s2:
+        count[ord(c)] -= 1
+    
+    for i in range(256):
+        if count[i] != 0:
+            await visualize_step(s1 + " | " + s2, [], "Not an anagram!", True)
+            return False
+    await visualize_step(s1 + " | " + s2, [], "Strings are anagrams!")
+    return True
+await is_anagram(current_string, "listen")`,
+
+        caesar: `async def caesar_cipher(s, shift=3):
+    result = []
+    for i, c in enumerate(s):
+        await visualize_step(s, [i], f"Processing character {c}")
+        if c.isalpha():
+            base = ord('A') if c.isupper() else ord('a')
+            result.append(chr((ord(c) - base + shift) % 26 + base))
+        else:
+            result.append(c)
+    transformed = ''.join(result)
+    await visualize_step(transformed, [], f"Cipher applied (shift={shift})")
+    return transformed
+await caesar_cipher(current_string)`
+    }
+};
+
+require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs' }});
+require(["vs/editor/editor.main"], function() {
+    editor = monaco.editor.create(document.getElementById('editor'), {
+        value: algorithms.javascript.palindrome,
+        language: "javascript",
+        theme: "vs-dark",
+        automaticLayout: true,
+        minimap: { enabled: false },
+        fontSize: 14,
+        lineNumbers: "on",
+        scrollbar: {
+            vertical: "visible",
+            horizontal: "visible"
+        }
+    });
+});
+
+async function initializePyodide() {
+    if (!pyodideInstance) {
+        pyodideInstance = await loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/"
+        });
+        await pyodideInstance.loadPackage("micropip");
+    }
+    return pyodideInstance;
+}
+
+function logToConsole(message) {
+    consoleOutput.innerHTML += `<div>> ${message}</div>`;
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function generateRandomString(length = 10) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    currentString = Array.from({length}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    updateStringDisplay(currentString);
+    logToConsole('Generated new string: ' + currentString);
+}
+
+function updateStringDisplay(str, highlightIndices = [], message = "") {
+    stringContainer.innerHTML = str.split('').map((char, index) => `
+        <div class="char-box ${highlightIndices.includes(index) ? 'comparing' : ''}">
+            ${char}
+            <div class="index-label">${index}</div>
+        </div>
+    `).join('');
+    
+    if (message) logToConsole(message);
+}
+
+async function visualizeStep(str, highlightIndices = [], message = "", isError = false) {
+    updateStringDisplay(str, highlightIndices, message);
+    await new Promise(resolve => setTimeout(resolve, speed));
+    if (isError) throw new Error(message);
+}
+
+async function runCode() {
+    consoleOutput.innerHTML = '';
+    const code = editor.getValue();
+    const language = document.getElementById('language-selector').value;
+    
+    try {
+        if (language === 'javascript') {
+            const originalLog = console.log;
+            console.log = msg => logToConsole(msg);
+            await new Function('currentString', 'visualizeStep', code)(currentString, visualizeStep);
+            console.log = originalLog;
+        } else if (language === 'python') {
+            const pyodide = await initializePyodide();
+            pyodide.globals.set('current_string', currentString);
+            pyodide.globals.set('visualize_step', visualizeStep);
+            pyodide.globals.set('log_to_console', logToConsole);
+            
+            await pyodide.runPythonAsync(`
+import sys
+import asyncio
+sys.stdout.write = log_to_console
+            `);
+            
+            await pyodide.runPythonAsync(code);
+        }
+        logToConsole("Execution completed successfully");
+    } catch (error) {
+        logToConsole(`Error: ${error.message}`);
+    }
+}
+
+document.getElementById('run-code').addEventListener('click', runCode);
+document.getElementById('generate').addEventListener('click', () => generateRandomString());
+document.getElementById('algorithm-selector').addEventListener('change', function() {
+    const lang = document.getElementById('language-selector').value;
+    editor.setValue(algorithms[lang][this.value]);
+});
+document.getElementById('language-selector').addEventListener('change', function() {
+    const algorithm = document.getElementById('algorithm-selector').value;
+    editor.setValue(algorithms[this.value][algorithm]);
+    monaco.editor.setModelLanguage(editor.getModel(), this.value);
+});
+document.getElementById('speed').addEventListener('input', e => {
+    speed = 1000 - parseInt(e.target.value);
+});
+document.getElementById('input-string').addEventListener('input', function(e) {
+    currentString = e.target.value;
+    updateStringDisplay(currentString);
+});
+
+// Initial setup
+generateRandomString();
+  </script>
+</body>
+</html>
