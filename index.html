@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algorithm Visualizer</title>
+
+  <!-- Pyodide for Python Execution -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"></script>
+
+  <!-- Monaco Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
+
+  <style>
+      body {
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          font-family: Arial, sans-serif;
+          background-color: #2d2d2d;
+          color: white;
+      }
+
+      header {
+          background: #1f1f1f;
+          padding: 10px 20px;
+          font-size: 18px;
+          border-bottom: 2px solid #444;
+      }
+
+      #main-container {
+          display: flex;
+          flex: 1;
+      }
+
+      #editor-container, #output-container {
+          flex: 1;
+          padding: 10px;
+          box-sizing: border-box;
+      }
+
+      #editor-container {
+          border-right: 2px solid #444;
+          width: 100%;
+      }
+
+      #output-container {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      #console {
+          flex: 1;
+          background: #222;
+          color: #0f0;
+          padding: 10px;
+          font-family: monospace;
+          overflow-y: auto;
+          border-radius: 5px;
+          min-height: 150px;
+          border: 2px solid #444;
+      }
+
+      button, select {
+          padding: 10px 15px;
+          background: #444;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-bottom: 10px;
+          font-size: 14px;
+      }
+
+      #arrayContainer {
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          height: 320px;
+          border-radius: 10px;
+          background: #1f1f1f;
+          padding: 20px;
+          margin-bottom: 20px;
+      }
+
+      .bar {
+          position: relative;
+          background: #007bff;
+          width: 30px;
+          margin: 0 3px;
+          border-radius: 5px;
+          text-align: center;
+          font-size: 14px;
+          font-weight: bold;
+          color: white;
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+          transition: height 0.3s ease;
+      }
+
+      .bar span {
+          position: absolute;
+          bottom: -25px;
+          color: white;
+          font-size: 14px;
+      }
+
+      #editor {
+          width: 100%;
+          height: 300px;
+          border-radius: 5px;
+      }
+
+      #controls {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+
+      #generate-container {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+      }
+
+      #speedControl {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+      }
+  </style>
+</head>
+<body>
+
+  <header>
+      Algorithm Visualizer
+  </header>
+
+  <div id="main-container">
+      <div id="editor-container">
+          <h2>Write Your Algorithm</h2>
+          <select id="language-selector">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+          </select>
+          <select id="algorithm-selector">
+              <option value="bubble">Bubble Sort</option>
+              <option value="selection">Selection Sort</option>
+              <option value="insertion">Insertion Sort</option>
+          </select>
+          <div id="editor"></div>
+          <button id="run-code">Run Code</button>
+      </div>
+
+      <div id="output-container">
+          <div id="arrayContainer"></div>
+          <div id="controls">
+              <div id="generate-container">
+                  <button id="generate">Generate Array</button>
+              </div>
+              <div id="speedControl">
+                  <label for="speed">Speed:</label>
+                  <input type="range" id="speed" min="50" max="1000" step="50" value="500">
+              </div>
+          </div>
+          <div id="console"></div>
+      </div>
+  </div>
+
+  <script>
+let array = [];
+const container = document.getElementById('arrayContainer');
+const consoleOutput = document.getElementById('console');
+const speedControl = document.getElementById('speed');
+let editor;
+let speed = 500;
+let pyodideInstance; // Global variable to store the Pyodide instance
+
+// Sorting Algorithms
+const algorithms = {
+    javascript: {
+        bubble: `async function bubbleSort(arr) {
+    for (let i = 0; i < arr.length - 1; i++) {
+        for (let j = 0; j < arr.length - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                await visualizeStep(arr);
+            }
+        }
+    }
+}
+bubbleSort(array);`,
+        selection: `async function selectionSort(arr) {
+    for (let i = 0; i < arr.length - 1; i++) {
+        let minIndex = i;
+        for (let j = i + 1; j < arr.length; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        if (minIndex !== i) {
+            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+            await visualizeStep(arr);
+        }
+    }
+}
+selectionSort(array);`,
+        insertion: `async function insertionSort(arr) {
+    for (let i = 1; i < arr.length; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j--;
+            await visualizeStep(arr);
+        }
+        arr[j + 1] = key;
+        await visualizeStep(arr);
+    }
+}
+insertionSort(array);`
+    },
+    python: {
+        bubble: `async def bubble_sort(arr):
+    for i in range(len(arr) - 1):
+        for j in range(len(arr) - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                await visualize_step(arr)
+bubble_sort(array)`,
+
+        selection: `async def selection_sort(arr):
+    for i in range(len(arr) - 1):
+        min_index = i
+        for j in range(i + 1, len(arr)):
+            if arr[j] < arr[min_index]:
+                min_index = j
+        if min_index != i:
+            arr[i], arr[min_index] = arr[min_index], arr[i]
+            await visualize_step(arr)
+selection_sort(array)`,
+
+        insertion: `async def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j -= 1
+            await visualize_step(arr)
+        arr[j + 1] = key
+        await visualize_step(arr)
+insertion_sort(array)`
+    }
+};
+
+// Initialize Monaco editor
+require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs' } });
+require(["vs/editor/editor.main"], function () {
+    editor = monaco.editor.create(document.getElementById('editor'), {
+        value: algorithms.javascript.bubble,
+        language: "javascript",
+        theme: "vs-dark",
+        automaticLayout: true
+    });
+});
+
+// Load Pyodide
+async function initializePyodide() {
+    if (!pyodideInstance) {
+        console.log("Loading Pyodide...");
+        pyodideInstance = await loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/"
+        });
+        console.log("Pyodide loaded");
+    }
+    return pyodideInstance;
+}
+
+function logToConsole(message) {
+    consoleOutput.innerHTML += `<div>> ${message}</div>`;
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+function generateArray(num = 20) {
+    array = [];
+    container.innerHTML = '';
+    for (let i = 0; i < num; i++) {
+        const value = Math.floor(Math.random() * 300) + 20;
+        array.push(value);
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        bar.style.height = value + 'px';
+        const text = document.createElement('span');
+        text.innerText = value;
+        bar.appendChild(text);
+        container.appendChild(bar);
+    }
+    logToConsole('Generated new array.');
+}
+
+function updateVisualization(arr) {
+    const bars = document.getElementsByClassName('bar');
+    for (let i = 0; i < arr.length; i++) {
+        bars[i].style.height = arr[i] + 'px';
+        bars[i].firstChild.innerText = arr[i];
+    }
+}
+
+async function visualizeStep(arr) {
+    updateVisualization(arr);
+    await new Promise(resolve => setTimeout(resolve, speed));
+}
+
+async function runPythonCode() {
+    const code = editor.getValue();
+    consoleOutput.innerHTML = '';
+    logToConsole("Running code...");
+    try {
+        const lang = document.getElementById('language-selector').value;
+
+        if (lang === 'javascript') {
+            // Override console.log in the JavaScript environment
+            const originalConsoleLog = console.log;
+            console.log = (message) => {
+                logToConsole(message);  // Redirect console.log output to the console
+                originalConsoleLog(message);  // Optionally still print to the browser's dev console
+            };
+
+            // Execute the JavaScript code in the editor
+            await new Function('array', 'visualizeStep', 'logToConsole', `"use strict"; ${code}`)(array, visualizeStep, logToConsole);
+
+            // Restore original console.log after execution
+            console.log = originalConsoleLog;
+        } else if (lang === 'python') {
+            const pyodide = await initializePyodide(); // Ensure Pyodide is loaded
+            pyodide.globals.set('array', array); // Set 'array' in Pyodide globals
+
+            // Set the 'visualize_step' function in Pyodide globals
+            pyodide.globals.set('visualize_step', visualizeStep);
+
+            // Capture print output by redirecting sys.stdout to a JavaScript function
+            pyodide.globals.set('log_to_console', logToConsole);
+
+            // Replace Python's built-in print function to call log_to_console
+            await pyodide.runPythonAsync(`
+import sys
+sys.stdout.write = log_to_console
+            `);
+
+            // Run the Python code
+            await pyodide.runPythonAsync(code); 
+            logToConsole("Python code executed successfully.");
+        }
+    } catch (error) {
+        logToConsole("Error: " + error.message);
+    }
+}
+
+
+
+
+
+document.getElementById('run-code').addEventListener('click', runPythonCode);
+
+document.getElementById('generate').addEventListener('click', () => {
+    generateArray();
+});
+
+document.getElementById('algorithm-selector').addEventListener('change', (e) => {
+    const lang = document.getElementById('language-selector').value;
+    editor.setValue(algorithms[lang][e.target.value]);
+});
+
+document.getElementById('language-selector').addEventListener('change', (e) => {
+    const lang = e.target.value;
+    const algorithm = document.getElementById('algorithm-selector').value;
+    editor.setValue(algorithms[lang][algorithm]);
+    editor.setModel(monaco.editor.createModel(algorithms[lang][algorithm], lang));
+});
+
+speedControl.addEventListener('input', (e) => {
+    const sliderValue = e.target.value;
+    speed = 1000 - sliderValue; // Smaller slider value => faster, larger => slower
+});
+
+generateArray();
+  </script>
+
+</body>
+</html>
