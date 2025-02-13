@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graph Algorithm Visualizer</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/editor/editor.main.min.css">
+  <style>
+      :root {
+          --primary: #6c5ce7;
+          --secondary: #a8a5e6;
+          --background: #1a1a2e;
+          --surface: #16213e;
+          --highlight: #ff6b6b;
+          --node-border: #ffffff20;
+          --edge-path: #4CAF50;
+      }
+
+      body {
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: var(--background);
+          color: white;
+      }
+
+      header {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          padding: 1rem 2rem;
+          font-size: 1.5rem;
+          font-weight: bold;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+
+      #main-container {
+          display: flex;
+          flex: 1;
+          gap: 20px;
+          padding: 20px;
+      }
+
+      #editor-container, #output-container {
+          flex: 1;
+          background: var(--surface);
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      #editor {
+          height: 400px !important;
+          border: 1px solid #444;
+          border-radius: 4px;
+          margin-top: 10px;
+      }
+
+      #graphCanvas {
+          background: var(--background);
+          border-radius: 12px;
+          margin-bottom: 20px;
+      }
+
+      #controls {
+          display: flex;
+          gap: 15px;
+          align-items: center;
+          padding: 15px;
+          background: var(--surface);
+          border-radius: 8px;
+          margin-bottom: 20px;
+      }
+
+      button {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          border: none;
+          border-radius: 6px;
+          color: white;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+      }
+
+      #console {
+          background: var(--background);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: #00ff9d;
+          padding: 15px;
+          border-radius: 8px;
+          font-family: 'Fira Code', monospace;
+          font-size: 14px;
+      }
+
+      .speed-control {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          background: rgba(255,255,255,0.05);
+          padding: 8px 15px;
+          border-radius: 6px;
+      }
+  </style>
+</head>
+<body>
+  <header>Graph Algorithm Visualizer</header>
+  <div id="main-container">
+      <div id="editor-container">
+          <h2>Algorithm Code</h2>
+          <select id="language-selector">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+          </select>
+          <select id="algorithm-selector">
+              <option value="bfs">BFS</option>
+              <option value="dfs">DFS</option>
+              <option value="dijkstra">Dijkstra's</option>
+          </select>
+          <div id="editor"></div>
+          <button id="run-code">Run Code</button>
+      </div>
+
+      <div id="output-container">
+          <div id="graphContainer" style="position: relative; height: 400px;">
+              <canvas id="graphCanvas" width="600" height="400"></canvas>
+          </div>
+          <div id="controls">
+              <button id="generate-graph">Generate Graph</button>
+              <div class="speed-control">
+                  <label for="speed">Speed:</label>
+                  <input type="range" id="speed" min="50" max="1000" step="50" value="500">
+              </div>
+          </div>
+          <div id="console"></div>
+      </div>
+  </div>
+
+  <script>
+// Helper function to access CSS variables
+function getCssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+const graph = {
+    nodes: [],
+    edges: [],
+    adjacencyList: {}
+};
+let visualizationSpeed = 500;
+let pyodideInstance = null;
+const consoleOutput = document.getElementById('console');
+const canvas = document.getElementById('graphCanvas');
+const ctx = canvas.getContext('2d');
+let editor;
+
+const algorithms = {
+    javascript: {
+        bfs: `async function bfs(startNode) {
+    const queue = [startNode];
+    const visited = new Set([startNode]);
+    
+    while (queue.length > 0) {
+        const current = queue.shift();
+        await visualizeStep(current, 'active');
+        
+        for (const neighbor of graph.adjacencyList[current]) {
+            if (!visited.has(neighbor)) {
+                visited.add(neighbor);
+                queue.push(neighbor);
+                await visualizeStep(neighbor, 'visited');
+            }
+        }
+        await visualizeStep(current, 'processed');
+    }
+}
+bfs(0);`,
+
+        dfs: `async function dfs(startNode) {
+    const stack = [startNode];
+    const visited = new Set();
+    
+    while (stack.length > 0) {
+        const current = stack.pop();
+        if (visited.has(current)) continue;
+        
+        visited.add(current);
+        await visualizeStep(current, 'active');
+        
+        for (const neighbor of graph.adjacencyList[current]) {
+            if (!visited.has(neighbor)) {
+                stack.push(neighbor);
+                await visualizeStep(neighbor, 'visited');
+            }
+        }
+        await visualizeStep(current, 'processed');
+    }
+}
+dfs(0);`,
+
+        dijkstra: `async function dijkstra(startNode) {
+    const distances = {};
+    const prev = {};
+    const unvisited = new Set();
+    
+    graph.nodes.forEach(node => {
+        distances[node.id] = Infinity;
+        prev[node.id] = null;
+        unvisited.add(node.id);
+    });
+    distances[startNode] = 0;
+    
+    while (unvisited.size > 0) {
+        const current = [...unvisited].reduce((a, b) => distances[a] < distances[b] ? a : b);
+        unvisited.delete(current);
+        await visualizeStep(current, 'active');
+        
+        for (const edge of graph.adjacencyList[current]) {
+            const alt = distances[current] + edge.weight;
+            if (alt < distances[edge.to]) {
+                distances[edge.to] = alt;
+                prev[edge.to] = current;
+                await visualizeStep(edge.to, 'visited');
+            }
+        }
+        await visualizeStep(current, 'processed');
+    }
+}
+dijkstra(0);`
+    },
+    python: {
+        bfs: `from js import graph, visualize_step
+import asyncio
+
+async def bfs(start_node):
+    queue = [start_node]
+    visited = set([start_node])
+    
+    while queue:
+        current = queue.pop(0)
+        await visualize_step(current, 'active')
+        
+        for neighbor in graph.adjacencyList[current]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+                await visualize_step(neighbor, 'visited')
+        
+        await visualize_step(current, 'processed')
+    
+await bfs(0)
+`,
+
+        dfs: `from js import graph, visualize_step
+import asyncio
+
+async def dfs(start_node):
+    stack = [start_node]
+    visited = set()
+    
+    while stack:
+        current = stack.pop()
+        if current in visited:
+            continue
+            
+        visited.add(current)
+        await visualize_step(current, 'active')
+        
+        for neighbor in graph.adjacencyList[current]:
+            if neighbor not in visited:
+                stack.append(neighbor)
+                await visualize_step(neighbor, 'visited')
+        
+        await visualize_step(current, 'processed')
+    
+await dfs(0)
+`,
+
+        dijkstra: `from js import graph, visualize_step
+import asyncio
+
+async def dijkstra(start_node):
+    distances = {node.id: float('inf') for node in graph.nodes}
+    prev = {node.id: None for node in graph.nodes}
+    unvisited = set(node.id for node in graph.nodes)
+    distances[start_node] = 0
+    
+    while unvisited:
+        current = min(unvisited, key=lambda x: distances[x])
+        unvisited.remove(current)
+        await visualize_step(current, 'active')
+        
+        for edge in graph.adjacencyList[current]:
+            alt = distances[current] + edge.weight
+            if alt < distances[edge.to]:
+                distances[edge.to] = alt
+                prev[edge.to] = current
+                await visualize_step(edge.to, 'visited')
+        
+        await visualize_step(current, 'processed')
+    
+await dijkstra(0)
+`
+    }
+};
+
+// Initialize editor
+require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs' } });
+require(["vs/editor/editor.main"], function () {
+    editor = monaco.editor.create(document.getElementById('editor'), {
+        value: algorithms.javascript.bfs,
+        language: "javascript",
+        theme: "vs-dark",
+        automaticLayout: true,
+        minimap: { enabled: false }
+    });
+});
+
+async function initializePyodide() {
+    if (!pyodideInstance) {
+        pyodideInstance = await loadPyodide({ 
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/" 
+        });
+        await pyodideInstance.loadPackage("micropip");
+    }
+    return pyodideInstance;
+}
+
+function generateRandomGraph() {
+    const numNodes = 8;
+    const radius = 150;
+    const centerX = 300;
+    const centerY = 200;
+    
+    graph.nodes = Array.from({length: numNodes}, (_, i) => ({
+        id: i,
+        x: centerX + radius * Math.cos((2 * Math.PI * i) / numNodes),
+        y: centerY + radius * Math.sin((2 * Math.PI * i) / numNodes)
+    }));
+    
+    graph.adjacencyList = {};
+    graph.edges = [];
+    graph.nodes.forEach(node => {
+        graph.adjacencyList[node.id] = [];
+        const numEdges = Math.floor(Math.random() * 2) + 1;
+        const possibleTargets = graph.nodes
+            .filter(n => n.id !== node.id)
+            .sort(() => Math.random() - 0.5);
+        
+        for (let i = 0; i < numEdges && i < possibleTargets.length; i++) {
+            const target = possibleTargets[i].id;
+            const weight = Math.floor(Math.random() * 9) + 1;
+            graph.edges.push({ from: node.id, to: target, weight });
+            graph.adjacencyList[node.id].push({ to: target, weight });
+        }
+    });
+    drawGraph();
+}
+
+function drawGraph() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw edges with arrows
+    graph.edges.forEach(edge => {
+        const fromNode = graph.nodes.find(n => n.id === edge.from);
+        const toNode = graph.nodes.find(n => n.id === edge.to);
+        const dx = toNode.x - fromNode.x;
+        const dy = toNode.y - fromNode.y;
+        const angle = Math.atan2(dy, dx);
+        
+        // Draw line
+        ctx.beginPath();
+        ctx.moveTo(fromNode.x, fromNode.y);
+        ctx.lineTo(toNode.x, toNode.y);
+        ctx.strokeStyle = getCssVar('--secondary');
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        // Draw arrowhead
+        ctx.save();
+        ctx.translate(toNode.x, toNode.y);
+        ctx.rotate(angle);
+        ctx.fillStyle = getCssVar('--secondary');
+        ctx.beginPath();
+        ctx.moveTo(-15, -8);
+        ctx.lineTo(0, 0);
+        ctx.lineTo(-15, 8);
+        ctx.fill();
+        ctx.restore();
+        
+        // Draw weight
+        ctx.fillStyle = 'white';
+        ctx.font = '14px Arial';
+        ctx.fillText(
+            edge.weight,
+            (fromNode.x + toNode.x)/2 + 10,
+            (fromNode.y + toNode.y)/2 + 10
+        );
+    });
+    
+    // Draw nodes with shadow
+    graph.nodes.forEach(node => {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 24, 0, Math.PI * 2);
+        
+        // Shadow
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 4;
+        
+        // Node body
+        ctx.fillStyle = getCssVar('--primary');
+        ctx.fill();
+        
+        // Node border
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = getCssVar('--node-border');
+        ctx.stroke();
+        
+        // Reset shadow
+        ctx.shadowColor = 'transparent';
+        
+        // Node label
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(node.id, node.x, node.y);
+    });
+}
+
+async function visualizeStep(nodeId, state) {
+    const node = graph.nodes.find(n => n.id === nodeId);
+    if (!node) return;
+
+    // Update node appearance
+    drawGraph();
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, 24, 0, Math.PI * 2);
+    
+    const colors = {
+        active: getCssVar('--highlight'),
+        visited: '#4CAF50',
+        processed: getCssVar('--primary'),
+        path: '#FFC107'
+    };
+    
+    // Animated pulse effect
+    const animate = async () => {
+        for (let i = 0; i < 3; i++) {
+            const size = 24 + i * 3;
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+            ctx.strokeStyle = colors[state] + (40 - i * 15);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    };
+    
+    // Draw main node
+    ctx.fillStyle = colors[state];
+    ctx.fill();
+    ctx.strokeStyle = getCssVar('--node-border');
+    ctx.stroke();
+    
+    // Node label
+    ctx.fillStyle = 'white';
+    ctx.font = '16px Arial';
+    ctx.fillText(node.id, node.x, node.y);
+    
+    await animate();
+    await new Promise(resolve => setTimeout(resolve, visualizationSpeed));
+}
+
+function logToConsole(message) {
+    consoleOutput.innerHTML += `<div>> ${message}</div>`;
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+async function runCode() {
+    consoleOutput.innerHTML = '';
+    const code = editor.getValue();
+    const language = document.getElementById('language-selector').value;
+    
+    try {
+        if (language === 'javascript') {
+            const originalLog = console.log;
+            console.log = msg => logToConsole(msg);
+            await new Function('graph', 'visualizeStep', code)(graph, visualizeStep);
+            console.log = originalLog;
+        } else if (language === 'python') {
+            const pyodide = await initializePyodide();
+            pyodide.globals.set('graph', graph);
+            pyodide.globals.set('visualize_step', visualizeStep);
+            pyodide.globals.set('log_to_console', logToConsole);
+            
+            await pyodide.runPythonAsync(`
+import sys
+sys.stdout.write = log_to_console
+            `);
+            
+            await pyodide.runPythonAsync(code);
+        }
+        logToConsole("Execution completed successfully");
+    } catch (error) {
+        logToConsole(`Error: ${error.message}`);
+    }
+}
+
+// Event listeners
+document.getElementById('run-code').addEventListener('click', runCode);
+document.getElementById('generate-graph').addEventListener('click', generateRandomGraph);
+document.getElementById('speed').addEventListener('input', e => {
+    visualizationSpeed = 1000 - parseInt(e.target.value);
+});
+document.getElementById('algorithm-selector').addEventListener('change', function() {
+    const lang = document.getElementById('language-selector').value;
+    editor.setValue(algorithms[lang][this.value]);
+});
+document.getElementById('language-selector').addEventListener('change', function() {
+    const algorithm = document.getElementById('algorithm-selector').value;
+    editor.setValue(algorithms[this.value][algorithm]);
+    monaco.editor.setModelLanguage(editor.getModel(), this.value);
+});
+
+// Initial setup
+generateRandomGraph();
+  </script>
+</body>
+</html>

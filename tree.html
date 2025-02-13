@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree Algorithm Visualizer</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/editor/editor.main.min.css">
+
+  <style>
+      :root {
+          --primary: #6c5ce7;
+          --secondary: #a8a5e6;
+          --background: #1a1a2e;
+          --surface: #16213e;
+          --highlight: #ff6b6b;
+      }
+
+      body {
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: var(--background);
+          color: white;
+      }
+
+      header {
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          padding: 1rem 2rem;
+          font-size: 1.5rem;
+          font-weight: bold;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+
+      #main-container {
+          display: flex;
+          flex: 1;
+          gap: 20px;
+          padding: 20px;
+      }
+
+      #editor-container, #output-container {
+          flex: 1;
+          background: var(--surface);
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      }
+
+      #editor {
+          height: 400px !important;
+          border: 1px solid #444;
+          border-radius: 4px;
+          margin-top: 10px;
+      }
+
+      #treeContainer {
+          height: 400px;
+          background: var(--background);
+          position: relative;
+          overflow: auto;
+      }
+
+      .node {
+          position: absolute;
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: var(--primary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+          transition: all 0.3s ease;
+          z-index: 2;
+      }
+
+      .node.visited {
+          background: var(--highlight);
+      }
+
+      .node.active {
+          transform: scale(1.2);
+          box-shadow: 0 0 15px var(--highlight);
+      }
+
+      .edge {
+          position: absolute;
+          background: var(--secondary);
+          transform-origin: 0 0;
+          height: 2px;
+          z-index: 1;
+      }
+
+      #controls {
+          display: flex;
+          gap: 15px;
+          align-items: center;
+          padding: 15px;
+          background: var(--surface);
+          border-radius: 8px;
+          margin-bottom: 20px;
+      }
+
+      button {
+          padding: 10px 20px;
+          background: linear-gradient(135deg, var(--primary), var(--secondary));
+          border: none;
+          border-radius: 6px;
+          color: white;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+      }
+
+      button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+      }
+
+      select {
+          padding: 8px 12px;
+          background: var(--background);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 6px;
+          color: white;
+      }
+
+      #speedControl {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          background: rgba(255,255,255,0.05);
+          padding: 8px 15px;
+          border-radius: 6px;
+      }
+
+      input[type="range"] {
+          width: 120px;
+          height: 4px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 2px;
+          -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 16px;
+          height: 16px;
+          background: var(--primary);
+          border-radius: 50%;
+          cursor: pointer;
+      }
+
+      #console {
+          background: var(--background);
+          border: 1px solid rgba(255,255,255,0.1);
+          color: #00ff9d;
+          padding: 15px;
+          border-radius: 8px;
+          font-family: 'Fira Code', monospace;
+          font-size: 14px;
+      }
+
+      h2 {
+          margin-top: 0;
+          color: var(--secondary);
+      }
+  </style>
+</head>
+<body>
+  <header>
+      Tree Algorithm Visualizer
+  </header>
+
+  <div id="main-container">
+      <div id="editor-container">
+          <h2>Write Your Algorithm</h2>
+          <select id="language-selector">
+              <option value="javascript">JavaScript</option>
+              <option value="python">Python</option>
+          </select>
+          <select id="algorithm-selector">
+              <option value="bst">BST Insertion</option>
+              <option value="traversal">In-Order Traversal</option>
+          </select>
+          <div id="editor"></div>
+          <button id="run-code">Run Code</button>
+      </div>
+
+      <div id="output-container">
+          <div id="treeContainer"></div>
+          <div id="controls">
+              <div id="generate-container">
+                  <button id="generate">Generate Tree</button>
+              </div>
+              <div id="speedControl">
+                  <label for="speed">Speed:</label>
+                  <input type="range" id="speed" min="50" max="1000" step="50" value="500">
+              </div>
+          </div>
+          <div id="console"></div>
+      </div>
+  </div>
+
+  <script>
+let tree = null;
+let nodes = new Map();
+const container = document.getElementById('treeContainer');
+const consoleOutput = document.getElementById('console');
+const speedControl = document.getElementById('speed');
+let editor;
+let speed = 500;
+let pyodideInstance;
+
+const algorithms = {
+    javascript: {
+        bst: `class Node {
+    constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+    }
+}
+
+async function insert(root, value) {
+    if (!root) {
+        await visualizeStep(value, 'insert');
+        return new Node(value);
+    }
+    
+    await visualizeStep(root.value, 'visit');
+    
+    if (value < root.value) {
+        root.left = await insert(root.left, value);
+    } else {
+        root.right = await insert(root.right, value);
+    }
+    return root;
+}
+
+async function main() {
+    let root = null;
+    const values = [5,3,7,2,4,6,8];
+    for (const value of values) {
+        root = await insert(root, value);
+    }
+    await visualizeStep(null, 'complete');
+}
+main();`,
+
+        traversal: `async function inOrder(node) {
+    if (node) {
+        await inOrder(node.left);
+        await visualizeStep(node.value, 'visit');
+        await inOrder(node.right);
+    }
+}
+
+async function main() {
+    await inOrder(tree);
+    await visualizeStep(null, 'complete');
+}
+main();`
+    },
+    python: {
+        bst: `class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+async def insert(root, value):
+    if not root:
+        await visualize_step(value, 'insert')
+        return Node(value)
+    
+    await visualize_step(root.value, 'visit')
+    
+    if value < root.value:
+        root.left = await insert(root.left, value)
+    else:
+        root.right = await insert(root.right, value)
+    return root
+
+async def main():
+    root = None
+    values = [5,3,7,2,4,6,8]
+    for value in values:
+        root = await insert(root, value)
+    await visualize_step(None, 'complete')
+
+await main()`,
+        traversal: `async def in_order(node):
+    if node:
+        await in_order(node.left)
+        await visualize_step(node.value, 'visit')
+        await in_order(node.right)
+
+async def main():
+    await in_order(tree)
+    await visualize_step(None, 'complete')
+
+await main()`
+    }
+};
+
+function calculatePositions(node, level = 0, pos = {x: 0, y: 0}, positions = [], depth = 0) {
+    if (!node) return;
+    
+    const horizontalSpacing = 150;
+    const verticalSpacing = 100;
+    
+    if (node.left) {
+        pos.x -= horizontalSpacing / (depth + 1);
+        calculatePositions(node.left, level + 1, pos, positions, depth + 1);
+    }
+    
+    positions.push({
+        value: node.value,
+        x: pos.x,
+        y: level * verticalSpacing + 50
+    });
+    
+    if (node.right) {
+        pos.x += horizontalSpacing / (depth + 1);
+        calculatePositions(node.right, level + 1, pos, positions, depth + 1);
+    }
+    
+    return positions;
+}
+
+function drawTree(root) {
+    container.innerHTML = '';
+    nodes.clear();
+    
+    if (!root) return;
+    
+    const positions = calculatePositions(root);
+    const connections = [];
+    
+    function processNode(node, parentPos) {
+        if (!node) return;
+        
+        const currentPos = positions.find(p => p.value === node.value);
+        if (parentPos) {
+            connections.push({from: parentPos, to: currentPos});
+        }
+        
+        if (node.left) processNode(node.left, currentPos);
+        if (node.right) processNode(node.right, currentPos);
+    }
+    
+    processNode(root, null);
+    
+    connections.forEach(conn => {
+        const line = document.createElement('div');
+        line.className = 'edge';
+        const length = Math.sqrt(
+            Math.pow(conn.to.x - conn.from.x, 2) + 
+            Math.pow(conn.to.y - conn.from.y, 2)
+        );
+        const angle = Math.atan2(conn.to.y - conn.from.y, conn.to.x - conn.from.x);
+        
+        line.style.width = `${length}px`;
+        line.style.left = `${conn.from.x + 25}px`;
+        line.style.top = `${conn.from.y + 25}px`;
+        line.style.transform = `rotate(${angle}rad)`;
+        container.appendChild(line);
+    });
+    
+    positions.forEach(pos => {
+        const node = document.createElement('div');
+        node.className = 'node';
+        node.textContent = pos.value;
+        node.style.left = `${pos.x}px`;
+        node.style.top = `${pos.y}px`;
+        nodes.set(pos.value, node);
+        container.appendChild(node);
+    });
+}
+
+async function visualizeStep(value, action) {
+    if (action === 'visit') {
+        const node = nodes.get(value);
+        node.classList.add('active');
+        await new Promise(resolve => setTimeout(resolve, speed));
+        node.classList.remove('active');
+    }
+    else if (action === 'insert') {
+        drawTree(tree);
+        await new Promise(resolve => setTimeout(resolve, speed));
+    }
+    else if (action === 'complete') {
+        Array.from(nodes.values()).forEach(node => node.classList.add('visited'));
+    }
+}
+
+async function generateTree() {
+    tree = null;
+    const values = Array.from({length: 7}, () => Math.floor(Math.random() * 20) + 1);
+    
+    async function insertNode(root, value) {
+        if (!root) return { value, left: null, right: null };
+        if (value < root.value) {
+            root.left = await insertNode(root.left, value);
+        } else {
+            root.right = await insertNode(root.right, value);
+        }
+        return root;
+    }
+    
+    for (const value of values) {
+        tree = await insertNode(tree, value);
+    }
+    drawTree(tree);
+    logToConsole('Generated new BST');
+}
+
+require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs' } });
+require(["vs/editor/editor.main"], function () {
+    editor = monaco.editor.create(document.getElementById('editor'), {
+        value: algorithms.javascript.bst,
+        language: "javascript",
+        theme: "vs-dark",
+        automaticLayout: true,
+        minimap: { enabled: false }
+    });
+});
+
+async function initializePyodide() {
+    if (!pyodideInstance) {
+        pyodideInstance = await loadPyodide({
+            indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.0/full/"
+        });
+        await pyodideInstance.loadPackage("micropip");
+    }
+    return pyodideInstance;
+}
+
+function logToConsole(message) {
+    consoleOutput.innerHTML += `<div>> ${message}</div>`;
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+}
+
+async function runCode() {
+    consoleOutput.innerHTML = '';
+    const code = editor.getValue();
+    const language = document.getElementById('language-selector').value;
+    
+    try {
+        if (language === 'javascript') {
+            const originalLog = console.log;
+            console.log = msg => logToConsole(msg);
+            const runFunc = new Function('tree', 'visualizeStep', code);
+            await runFunc(tree, visualizeStep);
+            console.log = originalLog;
+        } else if (language === 'python') {
+            const pyodide = await initializePyodide();
+            pyodide.globals.set('tree', tree);
+            pyodide.globals.set('visualize_step', visualizeStep);
+            pyodide.globals.set('log_to_console', logToConsole);
+            
+            await pyodide.runPythonAsync(`
+import sys
+import asyncio
+sys.stdout.write = log_to_console
+            `);
+            
+            try {
+                await pyodide.runPythonAsync(code);
+            } catch (pythonError) {
+                logToConsole(`Python Error: ${pythonError}`);
+            }
+        }
+        logToConsole("Execution completed successfully");
+    } catch (error) {
+        logToConsole(`Error: ${error.message}`);
+    }
+}
+
+document.getElementById('run-code').addEventListener('click', runCode);
+document.getElementById('generate').addEventListener('click', generateTree);
+document.getElementById('algorithm-selector').addEventListener('change', function() {
+    const lang = document.getElementById('language-selector').value;
+    editor.setValue(algorithms[lang][this.value]);
+});
+document.getElementById('language-selector').addEventListener('change', function() {
+    const algorithm = document.getElementById('algorithm-selector').value;
+    editor.setValue(algorithms[this.value][algorithm]);
+    monaco.editor.setModelLanguage(editor.getModel(), this.value);
+});
+document.getElementById('speed').addEventListener('input', e => {
+    speed = 1000 - parseInt(e.target.value);
+});
+
+generateTree();
+  </script>
+</body>
+</html>
