@@ -106,6 +106,9 @@ document.getElementById('generate').addEventListener('click', () => generateArra
 document.getElementById('algorithm-selector').addEventListener('change', function() {
     const lang = document.getElementById('language-selector').value;
     const selectedAlgorithm = this.value;
+    console.log("lang: " + lang)
+    console.log("alg: " + selectedAlgorithm)
+    console.log(algorithms[lang][selectedAlgorithm])
     editor.setValue(algorithms[lang][selectedAlgorithm]);
 });
 document.getElementById('language-selector').addEventListener('change', function() {

@@ -4,58 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Algorithm Visualizer</title>
+  <!-- External libraries -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.23.0/full/pyodide.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/editor/editor.main.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-
   <header>
       Algorithm Visualizer
   </header>
 
   <div id="main-container">
-      <div id="editor-container">
-          <h2>Write Your Algorithm</h2>
-          <select id="data-structure-selector">
-            <option value="array">Array</option>
-            <option value="string">String</option>
-            <option value="linkedList">Linked List</option>
-            <option value="tree">Tree</option>
-            <option value="graph">Graph</option>
-          </select>
-          <select id="language-selector">
-              <option value="javascript">JavaScript</option>
-              <option value="python">Python</option>
-          </select>
-          <select id="algorithm-selector">
-              <option value="bubble">Bubble Sort</option>
-              <option value="selection">Selection Sort</option>
-              <option value="insertion">Insertion Sort</option>
-              <option value="binarySearch">Binary Search</option>
-              <option value="slidingWindow">Sliding Window</option>
-              <option value="twoPointers">Two Pointers</option>
-          </select>
-          <div id="editor"></div>
-          <button id="run-code">Run Code</button>
+    <!-- Editor & Controls -->
+    <div id="editor-container">
+      <!-- New Data Structure selector (to the left) -->
+      <select id="data-structure-selector">
+        <option value="array">Array</option>
+        <option value="string">String</option>
+        <option value="linkedList">Linked List</option>
+        <option value="tree">Tree</option>
+        <option value="graph">Graph</option>
+      </select>
+      <!-- Language selector (same as before) -->
+      <select id="language-selector">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+      </select>
+      <!-- Algorithm selector (same as before) -->
+      <select id="algorithm-selector">
+          <option value="bubble">Bubble Sort</option>
+          <option value="selection">Selection Sort</option>
+          <option value="insertion">Insertion Sort</option>
+          <option value="binarySearch">Binary Search</option>
+          <option value="slidingWindow">Sliding Window</option>
+          <option value="twoPointers">Two Pointers</option>
+      </select>
+      <div id="editor"></div>
+      <button id="run-code">Run Code</button>
+    </div>
+
+    <!-- Output/Visualization Container -->
+    <div id="output-container">
+      <!-- Wrapper for array container and buttons -->
+      <div id="array-container-wrapper">
+        <div id="arrayContainer" class="data-container active"></div>
+        <div id="controls">
+          <div id="generate-container">
+              <button id="generate">Generate Data</button>
+          </div>
+          <div id="speedControl">
+              <label for="speed">Speed:</label>
+              <input type="range" id="speed" min="50" max="1000" step="50" value="500">
+          </div>
+        </div>
       </div>
 
-      <div id="output-container">
-          <div id="arrayContainer"></div>
-          <div id="controls">
-              <div id="generate-container">
-                  <button id="generate">Generate Array</button>
-              </div>
-              <div id="speedControl">
-                  <label for="speed">Speed:</label>
-                  <input type="range" id="speed" min="50" max="1000" step="50" value="500">
-              </div>
-          </div>
-          <div id="console"></div>
-      </div>
+      <!-- New containers for other data structures -->
+      <div id="stringContainer" class="data-container"></div>
+      <div id="linkedListContainer" class="data-container"></div>
+      <div id="treeContainer" class="data-container"></div>
+      <div id="graphContainer" class="data-container"></div>
+
+      <div id="console"></div>
+    </div>
   </div>
-  <script src="algorithms.js"></script>
-  <script src="main.js"></script>
+
+  <!-- Load our scripts -->
+  <script src="scripts/algorithms.js"></script>
+  <script src="scripts/main.js"></script>
+  <script src="scripts/dataStructureSwitcher.js"></script>
 </body>
 </html>

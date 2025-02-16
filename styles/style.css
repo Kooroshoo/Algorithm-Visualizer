@@ -186,6 +186,11 @@ h2 {
     font-size: 1.2rem;
 }
 
+#run-code {
+    margin-top: 10px;
+    width: 100%;
+}
+
 .selectors {
     display: flex;
     gap: 10px;
