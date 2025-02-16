@@ -21,7 +21,10 @@ header {
     padding: 1rem 2rem;
     font-size: 1.5rem;
     font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center; /* Align the items vertically */
+    gap: 10px; /* Space between the text and the link */
 }
 
 #main-container {
@@ -189,6 +192,26 @@ h2 {
 #run-code {
     margin-top: 10px;
     width: 100%;
+}
+
+.github-link {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    color: white;
+    text-decoration: none;
+    gap: 8px;
+}
+
+.github-link:hover {
+    background-color: #343541;
+    border-radius: 5px;
+}
+
+.github-icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
 }
 
 .selectors {
