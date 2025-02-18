@@ -1,82 +1,46 @@
-document.addEventListener("DOMContentLoaded", function() {
-  // Initially hide all containers
+// scripts/dataStructureSwitcher.js
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Initially show only the array container and hide the rest.
   toggleArrayContainer(true);
   toggleStringContainer(false);
   toggleLinkedListContainer(false);
   toggleTreeContainer(false);
   toggleGraphContainer(false);
 
-  // Listen for changes in the data structure selector
-  document.getElementById('data-structure-selector').addEventListener('change', function(event) {
-    // Show and hide containers based on selection
-    switch (event.target.value) {
-      case 'array':
-        toggleArrayContainer(true);
-        toggleStringContainer(false);
-        toggleLinkedListContainer(false);
-        toggleTreeContainer(false);
-        toggleGraphContainer(false);
-        break;
-      case 'string':
-        toggleArrayContainer(false);
-        toggleStringContainer(true);
-        toggleLinkedListContainer(false);
-        toggleTreeContainer(false);
-        toggleGraphContainer(false);
-        break;
-      case 'linkedList':
-        toggleArrayContainer(false);
-        toggleStringContainer(false);
-        toggleLinkedListContainer(true);
-        toggleTreeContainer(false);
-        toggleGraphContainer(false);
-        break;
-      case 'tree':
-        toggleArrayContainer(false);
-        toggleStringContainer(false);
-        toggleLinkedListContainer(false);
-        toggleTreeContainer(true);
-        toggleGraphContainer(false);
-        break;
-      case 'graph':
-        toggleArrayContainer(false);
-        toggleStringContainer(false);
-        toggleLinkedListContainer(false);
-        toggleTreeContainer(false);
-        toggleGraphContainer(true);
-        break;
-      default:
-        break;
-    }
+  // Listen for changes in the data structure selector.
+  document.getElementById('data-structure-selector').addEventListener('change', function (event) {
+    const value = event.target.value;
+    toggleArrayContainer(value === 'array');
+    toggleStringContainer(value === 'string');
+    toggleLinkedListContainer(value === 'linkedList');
+    toggleTreeContainer(value === 'tree');
+    toggleGraphContainer(value === 'graph');
   });
 
-  // Function to toggle the visibility of the array container
+  // Toggle functions for each container.
   function toggleArrayContainer(show) {
-    const arrayContainerWrapper = document.getElementById('array-container-wrapper');
-    arrayContainerWrapper.style.display = show ? 'block' : 'none';
+    const wrapper = document.getElementById('array-container-wrapper');
+    if (wrapper) wrapper.style.display = show ? 'block' : 'none';
   }
 
-  // Function to toggle the visibility of the string container
   function toggleStringContainer(show) {
-    const stringContainer = document.getElementById('stringContainer');
-    stringContainer.style.display = show ? 'block' : 'none';
+    const container = document.getElementById('stringContainer');
+    if (container) container.style.display = show ? 'block' : 'none';
   }
 
-  // Function to toggle the visibility of the linked list container
   function toggleLinkedListContainer(show) {
-    const linkedListContainer = document.getElementById('linkedListContainer');
-    linkedListContainer.style.display = show ? 'block' : 'none';
+    const container = document.getElementById('linkedListContainer');
+    if (container) container.style.display = show ? 'block' : 'none';
   }
 
-  // Function to toggle the visibility of the tree container
   function toggleTreeContainer(show) {
-    const treeContainer = document.getElementById('treeContainer');
-    treeContainer.style.display = show ? 'block' : 'none';
+    const container = document.getElementById('treeContainer');
+    if (container) container.style.display = show ? 'block' : 'none';
   }
 
-  // Function to toggle the visibility of the graph container
   function toggleGraphContainer(show) {
-    const graphContainer = document.getElementById('graphContainer');
-    graphContainer.style.display = show ? 'block' : 'none';
+    const container = document.getElementById('graphContainer');
+    if (container) container.style.display = show ? 'block' : 'none';
   }
 });
