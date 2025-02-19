@@ -9,6 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/loader.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/editor/editor.main.min.css">
   <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/string.css">
 </head>
 <body>
   <header>
@@ -65,8 +66,24 @@
         </div>
       </div>
 
-      <!-- New containers for other data structures -->
-      <div id="stringContainer" class="data-container"></div>
+      <!-- String Container (with its own controls) -->
+      <div id="string-container-wrapper" class="data-container">
+        <div id="string-controls">
+          <div id="string-generate-container">
+            <input type="text" id="string-input" placeholder="Enter string..." />
+            <button id="string-generate">Generate Random</button>
+          </div>
+          <div id="string-speed-control">
+            <label for="string-speed">Speed:</label>
+            <input type="range" id="string-speed" min="50" max="1000" step="50" value="500" />
+          </div>
+        </div>
+        <!-- This is where string.js will render the visualization -->
+        <div id="string-container"></div>
+      </div>
+
+
+
       <div id="linkedListContainer" class="data-container"></div>
       <div id="treeContainer" class="data-container"></div>
       <div id="graphContainer" class="data-container"></div>
@@ -79,6 +96,7 @@
   <script src="scripts/algorithms.js"></script>
   <script src="scripts/editor.js"></script>
   <script src="scripts/array.js"></script>
+  <script src="scripts/string.js"></script>
   <script src="scripts/main.js"></script>
   <script src="scripts/dataStructureSwitcher.js"></script>
 </body>

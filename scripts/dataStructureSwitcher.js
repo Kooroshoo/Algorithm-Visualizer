@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function toggleStringContainer(show) {
-    const container = document.getElementById('stringContainer');
+    const container = document.getElementById('string-container-wrapper');
     if (container) container.style.display = show ? 'block' : 'none';
   }
 

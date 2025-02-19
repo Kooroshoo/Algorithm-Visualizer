@@ -53,7 +53,7 @@ window.runCode = async function () {
           // Only set globals if array exists
           if (hasArray) {
               pyodide.globals.set('array', array);
-              pyodide.globals.set('visualize_step', visualizeStep);
+              pyodide.globals.set('visualize_step', (...args) => visualizeStep(Array.from(args[0]), Array.from(args[1] || []), Array.from(args[2] || [])));
           }
           pyodide.globals.set('log_to_console', logToConsole);
           

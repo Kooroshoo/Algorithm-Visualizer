@@ -24,3 +24,28 @@ document.addEventListener('DOMContentLoaded', function () {
   // Generate an initial array when the page loads.
   window.generateArray();
 });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Mapping of data structures to their respective visualization functions
+  const visualizationFunctions = {
+      array: visualizeArrayStep,
+      string: visualizeStringStep,
+      // linkedList: visualizeLinkedListStep,
+      // tree: visualizeTreeStep,
+      // graph: visualizeGraphStep
+  };
+
+  // Generalized visualizeStep function
+  window.visualizeStep = async function (...args) {
+      const selectedDataStructure = document.getElementById('data-structure-selector').value;
+
+      if (visualizationFunctions[selectedDataStructure]) {
+          await visualizationFunctions[selectedDataStructure](...args);
+      } else {
+          console.error("No visualization function found for", selectedDataStructure);
+      }
+  };
+});
+
+

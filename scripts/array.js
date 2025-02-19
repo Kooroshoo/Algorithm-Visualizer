@@ -34,17 +34,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
     };
-  
-    // Global function to animate one step by updating the visualization and pausing.
-    window.visualizeStep = async function (arr, comparingIndices = [], sortedIndices = []) {
-      if (!Array.isArray(comparingIndices)) {
-        comparingIndices = Array.from(comparingIndices || []);
-      }
-      if (!Array.isArray(sortedIndices)) {
-        sortedIndices = Array.from(sortedIndices || []);
-      }
-      window.updateVisualization(arr, comparingIndices, sortedIndices);
-      await new Promise(resolve => setTimeout(resolve, window.speed || 500));
-    };
+    
   });
+
+// Global function to animate one step by updating the visualization and pausing.
+window.visualizeArrayStep = async function (arr, comparingIndices = [], sortedIndices = []) {
+  const bars = document.getElementById('arrayContainer').getElementsByClassName('bar');
+  
+  arr.forEach((value, i) => {
+    if (bars[i]) {
+      bars[i].style.height = `${value}px`;
+      bars[i].className = 'bar' + 
+        (comparingIndices.includes(i) ? ' comparing' : '') +
+        (sortedIndices.includes(i) ? ' sorted' : '');
+    }
+  });
+
+  await new Promise(resolve => setTimeout(resolve, window.speed || 500));
+};
   
