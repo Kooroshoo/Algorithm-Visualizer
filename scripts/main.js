@@ -49,41 +49,72 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+// Data Structure Configuration
 const dsConfig = {
-  array: { algorithms: ['bubble', 'selection', 'insertion', 'binarySearch', 'slidingWindow', 'twoPointers'] },
-  string: { algorithms: ['slidingWindow', 'twoPointers'] },
-  linkedList: { algorithms: ['insertion', 'deletion', 'traversal'] },
-  tree: { algorithms: ['BFS', 'DFS', 'inOrder', 'preOrder', 'postOrder'] },
-  graph: { algorithms: ['BFS', 'DFS', 'dijkstra'] }
+  array: { 
+    algorithms: [
+      'select', 'intro', 'traverse', 'insertionBasic', 'deletion', 'linearSearch',
+      'arrayLength', 'reverse', 'merge', 'rotate', 'slidingWindow',
+      'twoPointers', 'prefixSuffixSum', 'dpFibonacci', 'quickSort',
+      'mergeSort', 'heapSort', 'binarySearch', 'rotatedBinarySearch',
+      'search2D', 'kmpSearch', 'maxSubArray', 'matrixMultiply',
+      'sparseArray', 'bitManipulation', 'bubble', 'selection', 'insertion'
+    ]
+  },  
+  string: { 
+    algorithms: ['slidingWindow', 'twoPointers'] 
+  },
+  linkedList: { 
+    algorithms: ['insertion', 'deletion', 'traversal'] 
+  },
+  tree: { 
+    algorithms: ['BFS', 'DFS', 'inOrder', 'preOrder', 'postOrder'] 
+  },
+  graph: { 
+    algorithms: ['BFS', 'DFS', 'dijkstra'] 
+  }
 };
 
-// Handle data structure change: Update algorithm options and load default code
-document.getElementById('data-structure-selector').addEventListener('change', e => {
-  const ds = e.target.value;
+// Function to populate algorithm dropdown
+function populateAlgorithmDropdown(ds) {
   const algoSelect = document.getElementById('algorithm-selector');
   algoSelect.innerHTML = ''; // Clear previous options
 
-  // Populate algorithm options
-  dsConfig[ds].algorithms.forEach(alg => {
-    const opt = document.createElement('option');
-    opt.value = alg;
-    opt.textContent = alg;
-    algoSelect.appendChild(opt);
-  });
+  if (dsConfig[ds] && dsConfig[ds].algorithms.length > 0) {
+    dsConfig[ds].algorithms.forEach(alg => {
+      const opt = document.createElement('option');
+      opt.value = alg;
+      opt.textContent = alg;
+      algoSelect.appendChild(opt);
+    });
 
-  // Load default code and update containers
-  loadDefaultCode(ds);
+    // Select first algorithm and load its code
+    algoSelect.value = dsConfig[ds].algorithms[0];
+    loadDefaultCode(ds);
+  } else {
+    console.warn(`No algorithms found for ${ds}`);
+  }
+}
+
+// Handle DSA selection change
+document.getElementById('data-structure-selector').addEventListener('change', e => {
+  const ds = e.target.value;
+  populateAlgorithmDropdown(ds);
   updateVisualizationContainers(ds);
 });
 
-// Update code in editor when algorithm or language changes
-['algorithm-selector', 'language-selector'].forEach(id => {
+// Update code in editor when selection changes
+['algorithm-selector', 'language-selector', 'data-structure-selector'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => {
     const lang = document.getElementById('language-selector').value;
     const alg = document.getElementById('algorithm-selector').value;
-    if (window.editor && algorithms[lang] && algorithms[lang][alg]) {
-      window.editor.setValue(algorithms[lang][alg]);
+    const ds = document.getElementById('data-structure-selector').value;
+
+    if (window.editor && algorithms[ds] && algorithms[ds][lang] && algorithms[ds][lang][alg]) {
+      window.editor.setValue(algorithms[ds][lang][alg]);
       monaco.editor.setModelLanguage(window.editor.getModel(), lang);
+    } else {
+      console.error(`Code for ${ds} - ${lang} - ${alg} not found in algorithms object.`);
     }
   });
 });
@@ -91,12 +122,16 @@ document.getElementById('data-structure-selector').addEventListener('change', e 
 // Load the default algorithm code for selected DS
 function loadDefaultCode(ds) {
   const lang = document.getElementById('language-selector').value;
-  const defAlg = dsConfig[ds].algorithms[0];
-  const code = algorithms[lang] && algorithms[lang][defAlg] ? algorithms[lang][defAlg] : dsConfig[ds].code[lang];
-  window.editor.setValue(code);
+  const defAlg = dsConfig[ds].algorithms[0]; // Get first algorithm
+
+  if (defAlg && algorithms[ds] && algorithms[ds][lang] && algorithms[ds][lang][defAlg]) {
+    window.editor.setValue(algorithms[ds][lang][defAlg]);
+  } else {
+    console.warn(`No default code found for ${ds} - ${lang}`);
+  }
 }
 
-// Show the corresponding container based on selected data structure
+// Show the corresponding container based on selected DS
 function updateVisualizationContainers(ds) {
   const containers = {
     array: 'array-container-wrapper',
@@ -106,23 +141,24 @@ function updateVisualizationContainers(ds) {
     graph: 'graphContainer'
   };
 
-  // Hide all containers
-  Object.keys(containers).forEach(key => {
-    const container = document.getElementById(containers[key]);
+  // Hide all containers first
+  Object.values(containers).forEach(containerId => {
+    const container = document.getElementById(containerId);
     if (container) container.style.display = 'none';
   });
 
   // Show the selected container
-  const selectedContainer = containers[ds];
-  const containerToShow = document.getElementById(selectedContainer);
-  if (containerToShow) {
-    containerToShow.style.display = 'block';
+  const selectedContainer = document.getElementById(containers[ds]);
+  if (selectedContainer) {
+    selectedContainer.style.display = 'block';
   }
 }
 
-// Initialize the page by triggering a change event on data structure selector
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-  // Initially hide all containers
+  const defaultDataStructure = document.getElementById('data-structure-selector').value;
+
+  // Hide all containers initially
   const containers = [
     'array-container-wrapper',
     'string-container-wrapper',
@@ -134,14 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
   containers.forEach(containerId => {
     const container = document.getElementById(containerId);
     if (container) {
-      container.style.display = 'none'; // Hide all containers at first
+      container.style.display = 'none'; // Ensure all are hidden at start
     }
   });
 
-  // Set the default data structure selection and show its container
-  const defaultDataStructure = document.getElementById('data-structure-selector').value;
+  // Populate dropdown and show the correct container
+  populateAlgorithmDropdown(defaultDataStructure);
   updateVisualizationContainers(defaultDataStructure);
 });
+
 
 
 

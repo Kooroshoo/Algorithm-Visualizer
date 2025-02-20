@@ -24,7 +24,7 @@
   <div id="main-container">
     <!-- Editor & Controls -->
     <div id="editor-container">
-      <!-- New Data Structure selector (to the left) -->
+      <!-- New Data Structure selector -->
       <select id="data-structure-selector">
         <option value="array">Array</option>
         <option value="string">String</option>
@@ -32,19 +32,13 @@
         <option value="tree">Tree</option>
         <option value="graph">Graph</option>
       </select>
-      <!-- Language selector (same as before) -->
+      <!-- Language selector -->
       <select id="language-selector">
           <option value="javascript">JavaScript</option>
           <option value="python">Python</option>
       </select>
-      <!-- Algorithm selector (same as before) -->
+      <!-- Algorithm selector (populate from code) -->
       <select id="algorithm-selector">
-          <option value="bubble">Bubble Sort</option>
-          <option value="selection">Selection Sort</option>
-          <option value="insertion">Insertion Sort</option>
-          <option value="binarySearch">Binary Search</option>
-          <option value="slidingWindow">Sliding Window</option>
-          <option value="twoPointers">Two Pointers</option>
       </select>
       <div id="editor"></div>
       <button id="run-code">Run Code</button>
@@ -98,6 +92,5 @@
   <script src="scripts/array.js"></script>
   <script src="scripts/string.js"></script>
   <script src="scripts/main.js"></script>
-  <script src="scripts/dataStructureSwitcher.js"></script>
 </body>
 </html>
