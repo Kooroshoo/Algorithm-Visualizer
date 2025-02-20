@@ -70,26 +70,3 @@ window.runCode = async function () {
       logToConsole(`Error: ${error.message}`);
     }
   };
-
-// --- Editor UI event listeners ---
-
-document.addEventListener('DOMContentLoaded', function () {
-  // When the algorithm selector changes, load the corresponding code snippet.
-  document.getElementById('algorithm-selector').addEventListener('change', function () {
-    const lang = document.getElementById('language-selector').value;
-    const selectedAlgorithm = this.value;
-    if (window.editor && algorithms[lang] && algorithms[lang][selectedAlgorithm]) {
-      window.editor.setValue(algorithms[lang][selectedAlgorithm]);
-    }
-  });
-
-  // When the language selector changes, update both the editor's content and its language mode.
-  document.getElementById('language-selector').addEventListener('change', function () {
-    const algorithm = document.getElementById('algorithm-selector').value;
-    if (window.editor && algorithms[this.value] && algorithms[this.value][algorithm]) {
-      window.editor.setValue(algorithms[this.value][algorithm]);
-      monaco.editor.setModelLanguage(window.editor.getModel(), this.value);
-    }
-  });
-});
-
