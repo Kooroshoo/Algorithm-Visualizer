@@ -5,7 +5,7 @@ const algorithms = {
             // Stage 1: Introduction to Arrays
             intro: `async function introductionToArrays() {
     // Creating an array
-    let arr = [1, 2, 3, 4, 5];
+    let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
     await visualizeStep(arr, [], []); // Visualize initial array
     // Accessing elements
     console.log("First element:", arr[0]);
@@ -33,10 +33,17 @@ traverseArray(array);`,
 insertElement(array, 42, 2);`,
 
             deletion: `async function deleteElement(arr, index) {
-    arr.splice(index, 1);
-    await visualizeStep(arr, [], []);
+    // Shift elements left starting from the deletion index
+    for (let i = index; i < arr.length - 1; i++) {
+        arr[i] = arr[i + 1];
+        await visualizeStep(arr, [i, i + 1], []);
+    }
+    // Set the last element to zero
+    arr[arr.length - 1] = 0;
+    await visualizeStep(arr, [arr.length - 1], []);
     return arr;
 }
+
 deleteElement(array, 2);`,
 
             linearSearch: `async function linearSearch(arr, target) {
@@ -49,11 +56,11 @@ deleteElement(array, 2);`,
     }
     return -1;
 }
-linearSearch(array, array[0]);`,
+linearSearch(array, array[5]);`,
 
             arrayLength: `async function arrayLength(arr) {
     let length = arr.length;
-    console.log("Array Length:", length);
+    console.log("Array Length: " + length);
     await visualizeStep(arr, [], []);
     return length;
 }
@@ -74,11 +81,12 @@ arrayLength(array);`,
 reverseArray(array);`,
 
             merge: `async function mergeArrays(arr1, arr2) {
-    let merged = arr1.concat(arr2);
+    // Take all elements of arr1 except the last arr2.length ones, then concatenate arr2.
+    let merged = arr1.slice(0, arr1.length - arr2.length).concat(arr2);
     await visualizeStep(merged, [], []);
     return merged;
 }
-mergeArrays(array, [6,7,8]);`,
+mergeArrays(array, [6, 7, 8]);`,
 
             rotate: `async function rotateArray(arr, d) {
     let rotated = arr.slice(d).concat(arr.slice(0, d));
@@ -145,7 +153,7 @@ prefixSuffixSum(array);`,
     }
     return fib;
 }
-dpFibonacci(10);`,
+dpFibonacci(20);`,
 
             // Stage 5: Optimization & Advanced Sorting
             quickSort: `async function quickSort(arr) {
@@ -233,6 +241,57 @@ mergeSort(array);`,
     return arr;
 }
 heapSort(array);`,
+
+bubble: `async function bubbleSort(arr) {
+    for (let i = 0; i < arr.length - 1; i++) {
+        for (let j = 0; j < arr.length - i - 1; j++) {
+            await visualizeStep(arr, [j, j+1], []);
+            if (arr[j] > arr[j+1]) {
+                [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
+                await visualizeStep(arr, [j, j+1], []);
+            }
+        }
+        await visualizeStep(arr, [], [arr.length - i - 1]);
+    }
+    await visualizeStep(arr, [], Array.from({length: arr.length}, (_, i) => i));
+}
+bubbleSort(array);`,
+
+            selection: `async function selectionSort(arr) {
+    for (let i = 0; i < arr.length - 1; i++) {
+        let minIndex = i;
+        for (let j = i + 1; j < arr.length; j++) {
+            await visualizeStep(arr, [j, minIndex], []);
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        if (minIndex !== i) {
+            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+            await visualizeStep(arr, [i, minIndex], []);
+        }
+        await visualizeStep(arr, [], [i]);
+    }
+    await visualizeStep(arr, [], Array.from({length: arr.length}, (_, i) => i));
+}
+selectionSort(array);`,
+
+            insertion: `async function insertionSort(arr) {
+    for (let i = 1; i < arr.length; i++) {
+        let key = arr[i];
+        let j = i - 1;
+        await visualizeStep(arr, [i], []);
+        while (j >= 0 && arr[j] > key) {
+            arr[j+1] = arr[j];
+            await visualizeStep(arr, [j, j+1], []);
+            j--;
+        }
+        arr[j+1] = key;
+        await visualizeStep(arr, [], [j+1]);
+    }
+    await visualizeStep(arr, [], Array.from({length: arr.length}, (_, i) => i));
+}
+insertionSort(array);`,
 
             // Stage 6: Advanced Searching
             binarySearch: `async function binarySearch(arr, target) {
@@ -339,15 +398,16 @@ search2D([[1,2,3],[4,5,6],[7,8,9]], 5);`,
     }
     return -1;
 }
-kmpSearch("abxabcabcaby", "abcaby");`,
+kmpSearch("abxabcabcabyabxabxab", "abcabc");`,
 
             maxSubArray: `async function maxSubArray(arr) {
     let maxSoFar = arr[0];
     let maxEndingHere = arr[0];
     for (let i = 1; i < arr.length; i++) {
+        console.log("max so far " + maxSoFar)
         maxEndingHere = Math.max(arr[i], maxEndingHere + arr[i]);
         maxSoFar = Math.max(maxSoFar, maxEndingHere);
-        await visualizeStep(arr, [i], []);
+        //await visualizeStep(arr, [i], []);
     }
     return maxSoFar;
 }
@@ -355,6 +415,8 @@ maxSubArray(array);`,
 
             // Stage 9: Advanced Topics (Optional)
             matrixMultiply: `async function matrixMultiply(A, B) {
+    const initialZeros = new Array(20).fill(0);
+    await visualizeStep(initialZeros, [], []);
     let result = [];
     for (let i = 0; i < A.length; i++) {
         result[i] = [];
@@ -371,6 +433,8 @@ maxSubArray(array);`,
 matrixMultiply([[1,2],[3,4]], [[5,6],[7,8]]);`,
 
             sparseArray: `async function sparseArray(matrix) {
+    const initialZeros = new Array(20).fill(0);
+    await visualizeStep(initialZeros, [], []);
     let sparse = [];
     for (let i = 0; i < matrix.length; i++) {
         for (let j = 0; j < matrix[i].length; j++) {
@@ -385,67 +449,44 @@ matrixMultiply([[1,2],[3,4]], [[5,6],[7,8]]);`,
 sparseArray([[0,0,3],[4,0,0],[0,5,0]]);`,
 
             bitManipulation: `async function countSetBits(n) {
+    // Visualize an initial array of zeros, using the length of a global "array"
+    await visualizeStep(new Array(array.length).fill(0), [], []);
+    
+    // Save the original number and compute its bit length
+    let original = n;
+    let bitLength = n.toString(2).length;
+    // Create a fixed-length array of bits from the original number
+    let originalBits = original
+      .toString(2)
+      .padStart(bitLength, '0')
+      .split('')
+      .map(Number);
+    
+    // Visualize an array of zeros with length equal to the bit length
+    await visualizeStep(new Array(bitLength).fill(0), [], []);
+    
     let count = 0;
+    // Process the number bit by bit
     while (n) {
+        // Get the current binary representation (this one shrinks as n is shifted)
+        let bits = n.toString(2).split('').map(Number);
+        await visualizeStep(bits, [], []);
+        
+        // Process the least significant bit and shift right
         count += n & 1;
         n = n >>> 1;
-        await visualizeStep([count], [], []);
     }
+    
+    console.log("count is: " + count);
+    // Visualize the original bits with a trailing -1
+    await visualizeStep(originalBits.concat([-1]), [], []);
+    
     return count;
 }
-countSetBits(29);`,
 
-            // Existing Sorting Algorithms
-            bubble: `async function bubbleSort(arr) {
-    for (let i = 0; i < arr.length - 1; i++) {
-        for (let j = 0; j < arr.length - i - 1; j++) {
-            await visualizeStep(arr, [j, j+1], []);
-            if (arr[j] > arr[j+1]) {
-                [arr[j], arr[j+1]] = [arr[j+1], arr[j]];
-                await visualizeStep(arr, [j, j+1], []);
-            }
-        }
-        await visualizeStep(arr, [], [arr.length - i - 1]);
-    }
-    await visualizeStep(arr, [], Array.from({length: arr.length}, (_, i) => i));
-}
-bubbleSort(array);`,
+countSetBits(5);`,
 
-            selection: `async function selectionSort(arr) {
-    for (let i = 0; i < arr.length - 1; i++) {
-        let minIndex = i;
-        for (let j = i + 1; j < arr.length; j++) {
-            await visualizeStep(arr, [j, minIndex], []);
-            if (arr[j] < arr[minIndex]) {
-                minIndex = j;
-            }
-        }
-        if (minIndex !== i) {
-            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
-            await visualizeStep(arr, [i, minIndex], []);
-        }
-        await visualizeStep(arr, [], [i]);
-    }
-    await visualizeStep(arr, [], Array.from({length: arr.length}, (_, i) => i));
-}
-selectionSort(array);`,
 
-            insertion: `async function insertionSort(arr) {
-    for (let i = 1; i < arr.length; i++) {
-        let key = arr[i];
-        let j = i - 1;
-        await visualizeStep(arr, [i], []);
-        while (j >= 0 && arr[j] > key) {
-            arr[j+1] = arr[j];
-            await visualizeStep(arr, [j, j+1], []);
-            j--;
-        }
-        arr[j+1] = key;
-        await visualizeStep(arr, [], [j+1]);
-    }
-    await visualizeStep(arr, [], Array.from({length: arr.length}, (_, i) => i));
-}
-insertionSort(array);`
         },
 
         python: {
