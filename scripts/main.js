@@ -56,9 +56,9 @@ const dsConfig = {
       'select', 'intro', 'traverse', 'insertionBasic', 'deletion', 'linearSearch',
       'arrayLength', 'reverse', 'merge', 'rotate', 'slidingWindow',
       'twoPointers', 'prefixSuffixSum', 'dpFibonacci', 'quickSort',
-      'mergeSort', 'heapSort', 'binarySearch', 'rotatedBinarySearch',
+      'mergeSort', 'heapSort', , 'bubble', 'selection', 'insertion', 'binarySearch', 'rotatedBinarySearch',
       'search2D', 'kmpSearch', 'maxSubArray', 'matrixMultiply',
-      'sparseArray', 'bitManipulation', 'bubble', 'selection', 'insertion'
+      'sparseArray', 'bitManipulation'
     ]
   },  
   string: { 

@@ -452,7 +452,7 @@ insertionSort(array);`
             // Stage 1: Introduction to Arrays
             intro: `async def introduction_to_arrays():
     # Creating an array (list)
-    arr = [1, 2, 3, 4, 5]
+    arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     await visualize_step(arr, [], [])
     # Accessing and modifying elements
     print("First element:", arr[0])
@@ -469,15 +469,24 @@ await introduction_to_arrays()`,
 await traverse_array(array)`,
             
             insertionBasic: `async def insert_element(arr, element, index):
-    arr.insert(index, element)
+    # Shift elements to the right to create space for the new element
+    arr[index+1:] = arr[index:-1]
+    arr[index] = element
     await visualize_step(arr, [index], [])
     return arr
+
 await insert_element(array, 42, 2)`,
             
             deletion: `async def delete_element(arr, index):
-    arr.pop(index)
-    await visualize_step(arr, [], [])
+    # Shift elements left starting from the deletion index
+    for i in range(index, len(arr) - 1):
+        arr[i] = arr[i + 1]
+        await visualize_step(arr, [i, i+1], [])
+    # Set the last element to zero
+    arr[-1] = 0
+    await visualize_step(arr, [len(arr)-1], [])
     return arr
+
 await delete_element(array, 2)`,
             
             linearSearch: `async def linear_search(arr, target):
@@ -487,7 +496,7 @@ await delete_element(array, 2)`,
             await visualize_step(arr, [i], [i])
             return i
     return -1
-await linear_search(array, array[0])`,
+await linear_search(array, array[5])`,
             
             arrayLength: `async def array_length(arr):
     length = len(arr)
@@ -510,15 +519,21 @@ await array_length(array)`,
 await reverse_array(array)`,
             
             merge: `async def merge_arrays(arr1, arr2):
-    merged = arr1 + arr2
+    # Convert arr1 to a Python list
+    arr1_list = list(arr1)
+    merged = arr1_list[:-len(arr2)] + arr2
     await visualize_step(merged, [], [])
     return merged
-await merge_arrays(array, [6,7,8])`,
+
+await merge_arrays(array, [6, 7, 8])`,
             
             rotate: `async def rotate_array(arr, d):
-    rotated = arr[d:] + arr[:d]
+    # Convert arr to a Python list
+    arr_list = list(arr)
+    rotated = arr_list[d:] + arr_list[:d]
     await visualize_step(rotated, [], [])
     return rotated
+
 await rotate_array(array, 2)`,
             
             // Stage 4: Advanced Array Techniques
@@ -568,7 +583,7 @@ await prefix_suffix_sum(array)`,
         fib.append(fib[i-1] + fib[i-2])
         await visualize_step(fib, [i-1, i-2, i], [])
     return fib
-await dp_fibonacci(10)`,
+await dp_fibonacci(20)`,
             
             // Stage 5: Optimization & Advanced Sorting
             quickSort: `async def quick_sort(arr):
@@ -601,22 +616,31 @@ await quick_sort(array)`,
             
             mergeSort: `async def merge_sort(arr):
     async def merge(left, right):
+        # Convert left and right to native Python lists
+        left, right = list(left), list(right)
         result = []
         while left and right:
+            # Convert left and right again in the visualization if needed
             await visualize_step(result + left + right, [], [])
             if left[0] < right[0]:
                 result.append(left.pop(0))
             else:
                 result.append(right.pop(0))
+        # Ensure left and right are native lists before concatenation
         return result + left + right
+
+    # Convert arr to a Python list (in case it's a JsProxy)
+    arr = list(arr)
     if len(arr) <= 1:
         return arr
+
     mid = len(arr) // 2
     left = await merge_sort(arr[:mid])
     right = await merge_sort(arr[mid:])
     merged = await merge(left, right)
     await visualize_step(merged, [], list(range(len(merged))))
     return merged
+
 await merge_sort(array)`,
             
             heapSort: `async def heap_sort(arr):
@@ -641,9 +665,50 @@ await merge_sort(array)`,
     await visualize_step(arr, [], list(range(len(arr))))
     return arr
 await heap_sort(array)`,
+
+            bubble: `async def bubble_sort(arr):
+    for i in range(len(arr) - 1):
+        for j in range(len(arr) - i - 1):
+            await visualize_step(arr, [j, j+1], [])
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+                await visualize_step(arr, [j, j+1], [])
+        await visualize_step(arr, [], [len(arr) - i - 1])
+    await visualize_step(arr, [], list(range(len(arr))))
+await bubble_sort(array)`,
+        
+        selection: `async def selection_sort(arr):
+    for i in range(len(arr) - 1):
+        min_index = i
+        for j in range(i + 1, len(arr)):
+            await visualize_step(arr, [j, min_index], [])
+            if arr[j] < arr[min_index]:
+                min_index = j
+        if min_index != i:
+            arr[i], arr[min_index] = arr[min_index], arr[i]
+            await visualize_step(arr, [i, min_index], [])
+        await visualize_step(arr, [], [i])
+    await visualize_step(arr, [], list(range(len(arr))))
+await selection_sort(array)`,
+        
+        insertion: `async def insertion_sort(arr):
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        await visualize_step(arr, [i], [])
+        while j >= 0 and arr[j] > key:
+            arr[j+1] = arr[j]
+            await visualize_step(arr, [j, j+1], [])
+            j -= 1
+        arr[j+1] = key
+        await visualize_step(arr, [], [j+1])
+    await visualize_step(arr, [], list(range(len(arr))))
+await insertion_sort(array)`,
             
             // Stage 6: Advanced Searching
             binarySearch: `async def binary_search(arr, target):
+    # Convert to a Python list if arr is a JsProxy
+    arr = list(arr)
     arr.sort()  # Sort the array before searching
     await visualize_step(arr, [], [])
     low = 0
@@ -727,7 +792,7 @@ await search_2d([[1,2,3],[4,5,6],[7,8,9]], 5)`,
             else:
                 i += 1
     return -1
-await kmp_search("abxabcabcaby", "abcaby")`,
+await kmp_search("abxabcabcabyabxabxab", "abcabc")`,
             
             maxSubArray: `async def max_sub_array(arr):
     max_so_far = arr[0]
@@ -736,11 +801,13 @@ await kmp_search("abxabcabcaby", "abcaby")`,
         max_ending_here = max(arr[i], max_ending_here + arr[i])
         max_so_far = max(max_so_far, max_ending_here)
         await visualize_step(arr, [i], [])
+        print("max so far " + str(max_so_far))
     return max_so_far
 await max_sub_array(array)`,
             
             // Stage 9: Advanced Topics (Optional)
             matrixMultiply: `async def matrix_multiply(A, B):
+    await visualize_step([0] * len(array), [], [])
     result = [[0 for _ in range(len(B[0]))] for _ in range(len(A))]
     for i in range(len(A)):
         for j in range(len(B[0])):
@@ -761,53 +828,30 @@ await matrix_multiply([[1,2],[3,4]], [[5,6],[7,8]])`,
 await sparse_array([[0,0,3],[4,0,0],[0,5,0]])`,
             
             bitManipulation: `async def count_set_bits(n):
+    await visualize_step([0] * len(array), [], [])
+    original = n  # Save the original number
+    bit_length = len(bin(n)[2:])
+    # Store the original binary representation as a fixed-length array
+    original_bits = [int(b) for b in bin(original)[2:].zfill(bit_length)]
+    
+    await visualize_step([0] * bit_length, [], [])
     count = 0
     while n:
+        # Get the current binary representation (this one shrinks as n is shifted)
+        bits = [int(b) for b in bin(n)[2:]]
+        await visualize_step(bits, [], [])
+        
+        # Process the least significant bit and shift right
         count += n & 1
         n >>= 1
-        await visualize_step([count], [], [])
-    return count
-await count_set_bits(29)`,
-            
-            // Existing Sorting Algorithms
-            bubble: `async def bubble_sort(arr):
-    for i in range(len(arr) - 1):
-        for j in range(len(arr) - i - 1):
-            await visualize_step(arr, [j, j+1], [])
-            if arr[j] > arr[j+1]:
-                arr[j], arr[j+1] = arr[j+1], arr[j]
-                await visualize_step(arr, [j, j+1], [])
-        await visualize_step(arr, [], [len(arr) - i - 1])
-    await visualize_step(arr, [], list(range(len(arr))))
-await bubble_sort(array)`,
-            
-            selection: `async def selection_sort(arr):
-    for i in range(len(arr) - 1):
-        min_index = i
-        for j in range(i + 1, len(arr)):
-            await visualize_step(arr, [j, min_index], [])
-            if arr[j] < arr[min_index]:
-                min_index = j
-        if min_index != i:
-            arr[i], arr[min_index] = arr[min_index], arr[i]
-            await visualize_step(arr, [i, min_index], [])
-        await visualize_step(arr, [], [i])
-    await visualize_step(arr, [], list(range(len(arr))))
-await selection_sort(array)`,
-            
-            insertion: `async def insertion_sort(arr):
-    for i in range(1, len(arr)):
-        key = arr[i]
-        j = i - 1
-        await visualize_step(arr, [i], [])
-        while j >= 0 and arr[j] > key:
-            arr[j+1] = arr[j]
-            await visualize_step(arr, [j, j+1], [])
-            j -= 1
-        arr[j+1] = key
-        await visualize_step(arr, [], [j+1])
-    await visualize_step(arr, [], list(range(len(arr))))
-await insertion_sort(array)`
+        
+    print("count is: " + str(count))
+    # Visualize the original bits with a trailing -1
+    await visualize_step(original_bits + [-1], [], [])
+    return
+
+await count_set_bits(5)`
+
         }
     }
 };
