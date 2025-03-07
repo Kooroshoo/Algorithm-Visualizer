@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       window.currentString = Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
       stringContainer.innerHTML = window.currentString.split('').map((char, index) => `
-        <div class="char-box">
+        <div class="string-char-box">
           ${char}
-          <div class="index-label">${index}</div>
+          <div class="string-index-label">${index}</div>
         </div>
       `).join('');
       window.logToConsole && window.logToConsole('Generated new string: ' + window.currentString);
@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
       let str = (input && typeof input.join === 'function') ? input.join('') : String(input);
       highlightIndices = Array.isArray(highlightIndices) ? highlightIndices : [];
       stringContainer.innerHTML = str.split('').map((char, index) => `
-        <div class="char-box ${highlightIndices.includes(index) ? 'comparing' : ''}">
+        <div class="string-char-box ${highlightIndices.includes(index) ? 'string-comparing' : ''}">
           ${char}
-          <div class="index-label">${index}</div>
+          <div class="string-index-label">${index}</div>
         </div>
       `).join('');
       window.logToConsole(Array.isArray(message) ? message.join('') : String(message));

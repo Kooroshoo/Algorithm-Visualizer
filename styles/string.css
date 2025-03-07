@@ -1,97 +1,103 @@
-/* String-specific Styles with "string-" prefix */
+:root {
+  --primary: #6c5ce7;
+  --secondary: #a8a5e6;
+  --background: #1a1a2e;
+  --surface: #16213e;
+  --highlight: #ff6b6b;
+}
 
-/* Wrapper for the entire string visualization inside array-container-wrapper */
+/* Wrapper for the entire string visualization */
 #string-container-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    min-height: 200px;
-    font-size: 2rem;
-    letter-spacing: 8px;
-    background: var(--surface);
-    border-radius: 12px;
-    margin: 20px 0;
-    padding: 20px;
-  }
-  
-  /* Controls at the top of the string container */
-  #string-controls {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  #string-generate-container {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  
-  #string-speed-control {
-    display: flex;
-    gap: 5px;
-    align-items: center;
-  }
-  
-  /* Display area where string.js renders the visualization */
-  #string-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    /* Optionally add a min-height or border if desired */
-  }
-  
-  /* Optional console for string-specific logging */
-  #string-console {
-    width: 100%;
-    margin-top: 10px;
-    background: var(--background);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #00ff9d;
-    padding: 10px;
-    font-family: 'Fira Code', monospace;
-    font-size: 14px;
-    border-radius: 8px;
-    max-height: 150px;
-    overflow-y: auto;
-  }
-  
-  /* Styling for individual character boxes */
-  .string-char-box {
-    display: inline-block;
-    padding: 10px;
-    margin: 5px;
-    min-width: 40px;
-    text-align: center;
-    background: var(--primary);
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    position: relative;
-  }
-  
-  .string-char-box.string-comparing {
-    background: var(--highlight);
-    transform: scale(1.2);
-  }
-  
-  .string-char-box.string-match {
-    background: #4CAF50;
-  }
-  
-  .string-char-box.string-mismatch {
-    background: #f44336;
-  }
-  
-  /* Label for character indices */
-  .string-index-label {
-    position: absolute;
-    bottom: -25px;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 200px;
+  background: var(--surface);
+  border-radius: 12px;
+  margin: 20px 0;
+  padding: 20px;
+}
+
+/* Controls section at the top */
+#string-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  padding: 15px;
+  background: var(--surface);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Container for generate and speed control elements */
+#string-generate-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Styling for speed control element */
+#string-speed-control {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 15px;
+  border-radius: 6px;
+}
+
+/* Display area where string.js renders the visualization */
+#string-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Input field styling */
+#string-input {
+  padding: 8px 12px;
+  background: var(--background);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  color: white;
+  width: 200px;
+}
+
+/* Styling for individual character boxes */
+.string-char-box {
+  display: inline-block;
+  padding: 10px;
+  margin: 5px;
+  min-width: 40px;
+  text-align: center;
+  background: var(--primary);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  position: relative;
+  font-size: 2rem;
+}
+
+/* State changes for character boxes */
+.string-char-box.string-comparing {
+  background: var(--highlight);
+  transform: scale(1.2);
+}
+
+.string-char-box.string-match {
+  background: var(--secondary);
+}
+
+.string-char-box.string-mismatch {
+  background: var(--highlight);
+}
+
+/* Label for character indices */
+.string-index-label {
+  position: absolute;
+  bottom: -25px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
