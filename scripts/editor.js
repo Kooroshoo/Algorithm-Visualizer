@@ -54,6 +54,10 @@ window.runCode = async function () {
           if (hasArray) {
               pyodide.globals.set('array', array);
               pyodide.globals.set('visualize_step', (...args) => visualizeStep(Array.from(args[0]), Array.from(args[1] || []), Array.from(args[2] || [])));
+
+            // Add these critical lines to expose linked list variables
+            pyodide.globals.set('head', window.head);
+            pyodide.globals.set('Node', window.ListNode);
           }
           pyodide.globals.set('log_to_console', logToConsole);
           pyodide.globals.set('current_string', window.currentString);

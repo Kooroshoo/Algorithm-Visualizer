@@ -891,6 +891,176 @@ await is_anagram(current_string, "listen")`,
     return transformed
 await caesar_cipher(current_string)`
         }
+    },
+
+    linkedList: {
+        javascript: {
+            insertion: `async function insertion(value) {
+    const newNode = new ListNode(value);
+    if (!head) {
+        head = newNode;
+    } else {
+        let current = head;
+        while (current.next) {
+            await visualizeStep(current);
+            current = current.next;
+        }
+        current.next = newNode;
     }
+    await visualizeStep(null);
+}
+insertion(Math.floor(Math.random() * 100) + 1);`,
+
+            deletion: `async function deletion(value) {
+    if (!head) return;
+
+    if (head.value === value) {
+        head = head.next;
+        await visualizeStep(null);
+        return;
+    }
+
+    let current = head;
+    while (current.next && current.next.value !== value) {
+        await visualizeStep(current);
+        current = current.next;
+    }
+
+    if (current.next) {
+        current.next = current.next.next;
+        await visualizeStep(null);
+    }
+}
+deletion(5);`,  
+
+            traversal: `async function traversal(value) {
+    let current = head;
+    let position = 0;
     
+    while (current) {
+        await visualizeStep(current);
+        if (current.value === value) {
+            await visualizeStep(current, true);
+            return position;
+        }
+        current = current.next;
+        position++;
+    }
+    await visualizeStep(null);
+    return -1;
+}
+traversal(5);`,  
+
+            reversal: `async function reversal() {
+    let prev = null;
+    let current = head;
+    
+    while (current) {
+        const next = current.next;
+        current.next = prev;
+        prev = current;
+        current = next;
+        await visualizeStep(prev, false, prev);
+    }
+    head = prev;
+    await visualizeStep(null, false, head);
+}
+reversal();`
+        },
+
+        python: {
+            insertion: `class Node:
+    def __init__(self, value, next=None):
+        self.value = value
+        self.next = next
+
+async def insertion(value):
+    global head
+    new_node = Node(value)
+    if not head:
+        head = new_node
+    else:
+        current = head
+        while current.next:
+            await visualize_step(current)
+            current = current.next
+        current.next = new_node
+    await visualize_step(None)
+
+await insertion(__import__('random').randint(1, 100))`,
+
+            deletion: `class Node:
+    def __init__(self, value, next=None):
+        self.value = value
+        self.next = next
+
+async def deletion(value):
+    global head
+    if not head:
+        return
+
+    if head.value == value:
+        head = head.next
+        await visualize_step(None)
+        return
+
+    current = head
+    while current.next and current.next.value != value:
+        await visualize_step(current)
+        current = current.next
+
+    if current.next:
+        current.next = current.next.next
+        await visualize_step(None)
+
+await deletion(5)`,  
+
+            traversal: `class Node:
+    def __init__(self, value, next=None):
+        self.value = value
+        self.next = next
+
+async def traversal(value):
+    current = head
+    position = 0
+    
+    while current:
+        await visualize_step(current)
+        if current.value == value:
+            await visualize_step(current, True)
+            return position
+        current = current.next
+        position += 1
+    await visualize_step(None)
+    return -1
+
+await traversal(5)`,  
+
+            reversal: `class Node:
+    def __init__(self, value, next=None):
+        self.value = value
+        self.next = next
+
+async def reversal():
+    global head
+    prev = None
+    current = head
+    
+    while current:
+        next_node = current.next
+        current.next = prev
+        prev = current
+        current = next_node
+        await visualize_step(prev, False, prev)
+    
+    head = prev
+    await visualize_step(None, False, head)
+
+await reversal()`
+        }
+    }
+
+
 };
+    
+

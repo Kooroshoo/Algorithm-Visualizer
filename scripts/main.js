@@ -30,9 +30,19 @@ document.addEventListener('DOMContentLoaded', function () {
       window.stringSpeed = 1000 - parseInt(e.target.value) + 1;
   });
 
+  // Bind controls for linked-list operations
+  document.getElementById('linked-list-generate').addEventListener('click', function() {
+      window.generateLinkedList(); // Generate a random string on click
+  });
+
+  document.getElementById('linked-list-speed-control').addEventListener('input', e => {
+      window.linkedListSpeed = 1000 - parseInt(e.target.value) + 1;
+  });
+
   // Generate an initial array and string when the page loads
   window.generateArray();
   window.generateString();
+  window.generateLinkedList();
 });
 
 
@@ -42,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const visualizationFunctions = {
       array: visualizeArrayStep,
       string: visualizeStringStep,
-      // linkedList: visualizeLinkedListStep,
+      linkedList: visualizeLinkedListStep,
       // tree: visualizeTreeStep,
       // graph: visualizeGraphStep
   };
@@ -75,7 +85,7 @@ const dsConfig = {
     algorithms: ['palindrome', 'reverse', 'substring', 'anagram', 'caesar']
   },
   linkedList: { 
-    algorithms: ['insertion', 'deletion', 'traversal'] 
+    algorithms: ['insertion', 'deletion', 'traversal', 'reversal'] 
   },
   tree: { 
     algorithms: ['BFS', 'DFS', 'inOrder', 'preOrder', 'postOrder'] 
@@ -146,7 +156,7 @@ function updateVisualizationContainers(ds) {
   const containers = {
     array: 'array-container-wrapper',
     string: 'string-container-wrapper',
-    linkedList: 'linkedListContainer',
+    linkedList: 'linked-list-container-wrapper',
     tree: 'treeContainer',
     graph: 'graphContainer'
   };
@@ -172,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const containers = [
     'array-container-wrapper',
     'string-container-wrapper',
-    'linkedListContainer',
+    'linked-list-container-wrapper',
     'treeContainer',
     'graphContainer'
   ];

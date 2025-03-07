@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.40.0/min/vs/editor/editor.main.min.css">
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/string.css">
+  <link rel="stylesheet" href="styles/linked-list.css">
 </head>
 <body>
   <header>
@@ -52,7 +53,7 @@
         <div id="arrayContainer" class="data-container active"></div>
         <div id="controls">
           <div id="generate-container">
-              <button id="generate">Generate Data</button>
+              <button id="generate">Generate Array</button>
           </div>
           <div id="speedControl">
               <label for="speed">Speed:</label>
@@ -66,7 +67,7 @@
         <div id="string-controls">
           <div id="string-generate-container">
             <input type="text" id="string-input" placeholder="Enter string..." />
-            <button id="string-generate">Generate Random</button>
+            <button id="string-generate">Generate String</button>
           </div>
           <div id="string-speed-control">
             <label for="string-speed">Speed:</label>
@@ -78,8 +79,20 @@
       </div>
 
 
+      <!-- Linked List Container -->
+      <div id="linked-list-container-wrapper" class="data-container">
+        <div id="linkedListContainer" class="data-container"></div>
+        <div id="linked-list-controls">
+            <div id="linked-list-generate-container">
+                <button id="linked-list-generate">Generate List</button>
+            </div>
+            <div id="linked-list-speed-control">
+                <label for="linked-list-speed">Speed:</label>
+                <input type="range" id="linked-list-speed" min="50" max="1000" step="50" value="500" />
+            </div>
+        </div>
+      </div>
 
-      <div id="linkedListContainer" class="data-container"><h1>Work in progress</h1></div>
       <div id="treeContainer" class="data-container"><h1>Work in progress</h1></div>
       <div id="graphContainer" class="data-container"><h1>Work in progress</h1></div>
 
@@ -92,6 +105,7 @@
   <script src="scripts/editor.js"></script>
   <script src="scripts/array.js"></script>
   <script src="scripts/string.js"></script>
+  <script src="scripts/linked-list.js"></script>
   <script src="scripts/main.js"></script>
 </body>
 </html>
