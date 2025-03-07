@@ -62,7 +62,7 @@ const dsConfig = {
     ]
   },  
   string: { 
-    algorithms: ['slidingWindow', 'twoPointers'] 
+    algorithms: ['palindrome', 'reverse', 'substring', 'anagram', 'caesar']
   },
   linkedList: { 
     algorithms: ['insertion', 'deletion', 'traversal'] 

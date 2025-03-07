@@ -56,6 +56,7 @@ window.runCode = async function () {
               pyodide.globals.set('visualize_step', (...args) => visualizeStep(Array.from(args[0]), Array.from(args[1] || []), Array.from(args[2] || [])));
           }
           pyodide.globals.set('log_to_console', logToConsole);
+          pyodide.globals.set('current_string', window.currentString);
           
           await pyodide.runPythonAsync(`
   import sys

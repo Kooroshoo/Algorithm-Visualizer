@@ -894,5 +894,177 @@ await sparse_array([[0,0,3],[4,0,0],[0,5,0]])`,
 await count_set_bits(5)`
 
         }
+    },
+    string: {
+        javascript: {
+            palindrome: `async function checkPalindrome(str) {
+    let left = 0;
+    let right = str.length - 1;
+    
+    while (left < right) {
+        await visualizeStep(str, [left, right], \`Comparing \${str[left]} and \${str[right]}\`);
+        if (str[left] !== str[right]) {
+            await visualizeStep(str, [left, right], "Mismatch found - not a palindrome", true);
+            return false;
+        }
+        left++;
+        right--;
     }
+    await visualizeStep(str, [], "All characters match - palindrome!");
+    return true;
+}
+checkPalindrome(currentString);`,
+    
+            reverse: `async function reverseString(str) {
+    const arr = str.split('');
+    let left = 0;
+    let right = arr.length - 1;
+    
+    while (left < right) {
+        await visualizeStep(arr.join(''), [left, right], \`Swapping \${arr[left]} and \${arr[right]}\`);
+        [arr[left], arr[right]] = [arr[right], arr[left]];
+        left++;
+        right--;
+    }
+    await visualizeStep(arr.join(''), [], "String reversed!");
+    return arr.join('');
+}
+reverseString(currentString);`,
+    
+            substring: `async function findSubstring(str, pattern = "abc") {
+    for (let i = 0; i <= str.length - pattern.length; i++) {
+        let match = true;
+        for (let j = 0; j < pattern.length; j++) {
+            await visualizeStep(str, [i + j], \`Comparing \${str[i + j]} with \${pattern[j]}\`);
+            if (str[i + j] !== pattern[j]) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            await visualizeStep(str, Array.from({length: pattern.length}, (_, k) => i + k), "Pattern found!");
+            return i;
+        }
+    }
+    await visualizeStep(str, [], "Pattern not found");
+    return -1;
+}
+findSubstring(currentString);`,
+    
+            anagram: `async function isAnagram(str1, str2) {
+    if (str1.length !== str2.length) {
+        await visualizeStep(str1 + " | " + str2, [], "Not an anagram!", true);
+        return false;
+    }
+    const count = {};
+    for (let char of str1) count[char] = (count[char] || 0) + 1;
+    for (let char of str2) {
+        if (!count[char]) {
+            await visualizeStep(str1 + " | " + str2, [], "Not an anagram!", true);
+            return false;
+        }
+        count[char]--;
+    }
+    await visualizeStep(str1 + " | " + str2, [], "Strings are anagrams!");
+    return true;
+}
+isAnagram(currentString, "listen");`,
+    
+            caesar: `async function caesarCipher(str, shift = 3) {
+    let result = "";
+    for (let i = 0; i < str.length; i++) {
+        let char = str[i];
+        await visualizeStep(str, [i], \`Processing character \${char}\`);
+        if (char.match(/[a-zA-Z]/)) {
+            let code = char.charCodeAt(0);
+            let base = code >= 65 && code <= 90 ? 65 : 97;
+            char = String.fromCharCode(((code - base + shift) % 26) + base);
+        }
+        result += char;
+    }
+    await visualizeStep(result, [], \`Cipher applied (shift=\${shift})\`);
+    return result;
+}
+caesarCipher(currentString);`
+        },
+        python: {
+            palindrome: `async def check_palindrome(s):
+    left = 0
+    right = len(s) - 1
+    
+    while left < right:
+        await visualize_step(s, [left, right], f"Comparing {s[left]} and {s[right]}")
+        if s[left] != s[right]:
+            await visualize_step(s, [left, right], "Mismatch found - not a palindrome", True)
+            return False
+        left += 1
+        right -= 1
+    await visualize_step(s, [], "All characters match - palindrome!")
+    return True
+await check_palindrome(current_string)`,
+            
+            reverse: `async def reverse_string(s):
+    arr = list(s)
+    left, right = 0, len(arr) - 1
+    
+    while left < right:
+        await visualize_step("".join(arr), [left, right], f"Swapping {arr[left]} and {arr[right]}")
+        arr[left], arr[right] = arr[right], arr[left]
+        left += 1
+        right -= 1
+    reversed_str = "".join(arr)
+    await visualize_step(reversed_str, [], "String reversed!")
+    return reversed_str
+await reverse_string(current_string)`,
+            
+            substring: `async def find_substring(s, pattern="abc"):
+    for i in range(len(s) - len(pattern) + 1):
+        match = True
+        for j in range(len(pattern)):
+            await visualize_step(s, [i + j], f"Comparing {s[i + j]} with {pattern[j]}")
+            if s[i + j] != pattern[j]:
+                match = False
+                break
+        if match:
+            await visualize_step(s, list(range(i, i + len(pattern))), "Pattern found!")
+            return i
+    await visualize_step(s, [], "Pattern not found")
+    return -1
+await find_substring(current_string)`,
+            
+            anagram: `async def is_anagram(s1, s2):
+    if len(s1) != len(s2):
+        await visualize_step(s1 + " | " + s2, [], "Not an anagram!", True)
+        return False
+    count = [0] * 256
+    
+    for c in s1:
+        count[ord(c)] += 1
+    for c in s2:
+        count[ord(c)] -= 1
+    
+    for i in count:
+        if i != 0:
+            await visualize_step(s1 + " | " + s2, [], "Not an anagram!", True)
+            return False
+    await visualize_step(s1 + " | " + s2, [], "Strings are anagrams!")
+    return True
+await is_anagram(current_string, "listen")`,
+            
+            caesar: `async def caesar_cipher(s, shift=3):
+    result = []
+    for i, c in enumerate(s):
+        await visualize_step(s, [i], f"Processing character {c}")
+        if c.isalpha():
+            base = ord('A') if c.isupper() else ord('a')
+            result.append(chr((ord(c) - base + shift) % 26 + base))
+        else:
+            result.append(c)
+    transformed = ''.join(result)
+    await visualize_step(transformed, [], f"Cipher applied (shift={shift})")
+    return transformed
+await caesar_cipher(current_string)`
+        }
+    }
+    
 };
