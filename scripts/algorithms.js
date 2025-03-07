@@ -2,34 +2,21 @@
 const algorithms = {
     array: {
         javascript: {
-            // Stage 1: Introduction to Arrays
-            intro: `async function introductionToArrays() {
-    // Creating an array
-    let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-    await visualizeStep(arr, [], []); // Visualize initial array
-    // Accessing elements
-    console.log("First element:", arr[0]);
-    // Modifying an element
-    arr[2] = 99;
-    await visualizeStep(arr, [2], []);
-    return arr;
-}
-introductionToArrays();`,
-
-            // Stage 2: Basic Array Operations
-            traverse: `async function traverseArray(arr) {
-    for (let i = 0; i < arr.length; i++) {
-        await visualizeStep(arr, [i], []);
+            // Basic Array Operations
+            insertion: `async function insertElement(arr, element, index) {
+    // Shift elements to the right starting from the end of the array to the index
+    for (let i = arr.length - 1; i > index; i--) {
+        arr[i] = arr[i - 1];  // Shift element to the right
+        await visualizeStep(arr, [i, i - 1], []); // Visualize shifting elements
     }
+    
+    // Insert the new element at the specified index
+    arr[index] = element;
+    await visualizeStep(arr, [index], []); // Visualize the insertion of the new element
+    
     return arr;
 }
-traverseArray(array);`,
 
-            insertionBasic: `async function insertElement(arr, element, index) {
-    arr.splice(index, 0, element);
-    await visualizeStep(arr, [index], []);
-    return arr;
-}
 insertElement(array, 42, 2);`,
 
             deletion: `async function deleteElement(arr, index) {
@@ -56,17 +43,9 @@ deleteElement(array, 2);`,
     }
     return -1;
 }
-linearSearch(array, array[5]);`,
+linearSearch(array, array[10]);`,
 
-            arrayLength: `async function arrayLength(arr) {
-    let length = arr.length;
-    console.log("Array Length: " + length);
-    await visualizeStep(arr, [], []);
-    return length;
-}
-arrayLength(array);`,
-
-            // Stage 3: Intermediate Array Operations
+            // Intermediate Array Operations
             reverse: `async function reverseArray(arr) {
     let left = 0, right = arr.length - 1;
     while (left < right) {
@@ -80,14 +59,6 @@ arrayLength(array);`,
 }
 reverseArray(array);`,
 
-            merge: `async function mergeArrays(arr1, arr2) {
-    // Take all elements of arr1 except the last arr2.length ones, then concatenate arr2.
-    let merged = arr1.slice(0, arr1.length - arr2.length).concat(arr2);
-    await visualizeStep(merged, [], []);
-    return merged;
-}
-mergeArrays(array, [6, 7, 8]);`,
-
             rotate: `async function rotateArray(arr, d) {
     let rotated = arr.slice(d).concat(arr.slice(0, d));
     await visualizeStep(rotated, [], []);
@@ -95,7 +66,7 @@ mergeArrays(array, [6, 7, 8]);`,
 }
 rotateArray(array, 2);`,
 
-            // Stage 4: Advanced Array Techniques
+            // Advanced Array Techniques
             slidingWindow: `async function slidingWindow(arr, windowSize) {
     if (arr.length < windowSize) {
         return;
@@ -155,7 +126,7 @@ prefixSuffixSum(array);`,
 }
 dpFibonacci(20);`,
 
-            // Stage 5: Optimization & Advanced Sorting
+            // Optimization & Advanced Sorting
             quickSort: `async function quickSort(arr) {
     async function partition(items, left, right) {
         let pivot = items[Math.floor((left + right) / 2)];
@@ -242,7 +213,7 @@ mergeSort(array);`,
 }
 heapSort(array);`,
 
-bubble: `async function bubbleSort(arr) {
+            bubbleSort: `async function bubbleSort(arr) {
     for (let i = 0; i < arr.length - 1; i++) {
         for (let j = 0; j < arr.length - i - 1; j++) {
             await visualizeStep(arr, [j, j+1], []);
@@ -257,7 +228,7 @@ bubble: `async function bubbleSort(arr) {
 }
 bubbleSort(array);`,
 
-            selection: `async function selectionSort(arr) {
+            selectionSort: `async function selectionSort(arr) {
     for (let i = 0; i < arr.length - 1; i++) {
         let minIndex = i;
         for (let j = i + 1; j < arr.length; j++) {
@@ -276,7 +247,7 @@ bubbleSort(array);`,
 }
 selectionSort(array);`,
 
-            insertion: `async function insertionSort(arr) {
+            insertionSort: `async function insertionSort(arr) {
     for (let i = 1; i < arr.length; i++) {
         let key = arr[i];
         let j = i - 1;
@@ -293,7 +264,7 @@ selectionSort(array);`,
 }
 insertionSort(array);`,
 
-            // Stage 6: Advanced Searching
+            // Advanced Searching
             binarySearch: `async function binarySearch(arr, target) {
     arr.sort((a, b) => a - b);
     let low = 0;
@@ -315,48 +286,7 @@ insertionSort(array);`,
 }
 binarySearch(array, array[Math.floor(array.length/2)]);`,
 
-            rotatedBinarySearch: `async function rotatedBinarySearch(arr, target) {
-    // Assuming arr is a rotated sorted array
-    let left = 0, right = arr.length - 1;
-    while (left <= right) {
-        let mid = Math.floor((left + right) / 2);
-        await visualizeStep(arr, [mid], []);
-        if (arr[mid] === target) {
-            await visualizeStep(arr, [mid], [mid]);
-            return mid;
-        }
-        if (arr[left] <= arr[mid]) {
-            if (target >= arr[left] && target < arr[mid]) {
-                right = mid - 1;
-            } else {
-                left = mid + 1;
-            }
-        } else {
-            if (target > arr[mid] && target <= arr[right]) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
-            }
-        }
-    }
-    return -1;
-}
-rotatedBinarySearch(array, array[0]);`,
-
-            search2D: `async function search2D(matrix, target) {
-    for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[i].length; j++) {
-            await visualizeStep(matrix.flat(), [i * matrix[i].length + j], []);
-            if (matrix[i][j] === target) {
-                return [i, j];
-            }
-        }
-    }
-    return [-1, -1];
-}
-search2D([[1,2,3],[4,5,6],[7,8,9]], 5);`,
-
-            // Stage 7: Array Applications in DSA
+            // Array Applications in DSA
             kmpSearch: `async function kmpSearch(text, pattern) {
     function buildLPS(pattern) {
         let lps = Array(pattern.length).fill(0);
@@ -400,20 +330,8 @@ search2D([[1,2,3],[4,5,6],[7,8,9]], 5);`,
 }
 kmpSearch("abxabcabcabyabxabxab", "abcabc");`,
 
-            maxSubArray: `async function maxSubArray(arr) {
-    let maxSoFar = arr[0];
-    let maxEndingHere = arr[0];
-    for (let i = 1; i < arr.length; i++) {
-        console.log("max so far " + maxSoFar)
-        maxEndingHere = Math.max(arr[i], maxEndingHere + arr[i]);
-        maxSoFar = Math.max(maxSoFar, maxEndingHere);
-        //await visualizeStep(arr, [i], []);
-    }
-    return maxSoFar;
-}
-maxSubArray(array);`,
 
-            // Stage 9: Advanced Topics (Optional)
+            // Advanced Topics (Optional)
             matrixMultiply: `async function matrixMultiply(A, B) {
     const initialZeros = new Array(20).fill(0);
     await visualizeStep(initialZeros, [], []);
@@ -432,21 +350,6 @@ maxSubArray(array);`,
 }
 matrixMultiply([[1,2],[3,4]], [[5,6],[7,8]]);`,
 
-            sparseArray: `async function sparseArray(matrix) {
-    const initialZeros = new Array(20).fill(0);
-    await visualizeStep(initialZeros, [], []);
-    let sparse = [];
-    for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix[i].length; j++) {
-            if (matrix[i][j] !== 0) {
-                sparse.push({row: i, col: j, value: matrix[i][j]});
-                await visualizeStep(matrix.flat(), [i * matrix[i].length + j], []);
-            }
-        }
-    }
-    return sparse;
-}
-sparseArray([[0,0,3],[4,0,0],[0,5,0]]);`,
 
             bitManipulation: `async function countSetBits(n) {
     // Visualize an initial array of zeros, using the length of a global "array"
@@ -484,36 +387,23 @@ sparseArray([[0,0,3],[4,0,0],[0,5,0]]);`,
     return count;
 }
 
-countSetBits(5);`,
+countSetBits(77);`,
 
 
         },
 
-        python: {
-            // Stage 1: Introduction to Arrays
-            intro: `async def introduction_to_arrays():
-    # Creating an array (list)
-    arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-    await visualize_step(arr, [], [])
-    # Accessing and modifying elements
-    print("First element:", arr[0])
-    arr[2] = 99
-    await visualize_step(arr, [2], [])
-    return arr
-await introduction_to_arrays()`,
-            
-            // Stage 2: Basic Array Operations
-            traverse: `async def traverse_array(arr):
-    for i in range(len(arr)):
-        await visualize_step(arr, [i], [])
-    return arr
-await traverse_array(array)`,
-            
-            insertionBasic: `async def insert_element(arr, element, index):
-    # Shift elements to the right to create space for the new element
-    arr[index+1:] = arr[index:-1]
+        python: {          
+            // Basic Array Operations 
+            insertion: `async def insert_element(arr, element, index):
+    # Shift elements to the right step by step
+    for i in range(len(arr) - 1, index, -1):
+        arr[i] = arr[i - 1]  # Shift element to the right
+        await visualize_step(arr, [i, i - 1], [])  # Visualize each shift
+
+    # Insert the new element at the specified index
     arr[index] = element
-    await visualize_step(arr, [index], [])
+    await visualize_step(arr, [index], [])  # Visualize the insertion of the new element
+    
     return arr
 
 await insert_element(array, 42, 2)`,
@@ -537,16 +427,10 @@ await delete_element(array, 2)`,
             await visualize_step(arr, [i], [i])
             return i
     return -1
-await linear_search(array, array[5])`,
+await linear_search(array, array[10])`,
             
-            arrayLength: `async def array_length(arr):
-    length = len(arr)
-    print("Array Length:", length)
-    await visualize_step(arr, [], [])
-    return length
-await array_length(array)`,
             
-            // Stage 3: Intermediate Array Operations
+            // Intermediate Array Operations
             reverse: `async def reverse_array(arr):
     left = 0
     right = len(arr) - 1
@@ -559,15 +443,6 @@ await array_length(array)`,
     return arr
 await reverse_array(array)`,
             
-            merge: `async def merge_arrays(arr1, arr2):
-    # Convert arr1 to a Python list
-    arr1_list = list(arr1)
-    merged = arr1_list[:-len(arr2)] + arr2
-    await visualize_step(merged, [], [])
-    return merged
-
-await merge_arrays(array, [6, 7, 8])`,
-            
             rotate: `async def rotate_array(arr, d):
     # Convert arr to a Python list
     arr_list = list(arr)
@@ -577,7 +452,7 @@ await merge_arrays(array, [6, 7, 8])`,
 
 await rotate_array(array, 2)`,
             
-            // Stage 4: Advanced Array Techniques
+            // Advanced Array Techniques
             slidingWindow: `async def sliding_window(arr, window_size):
     if len(arr) < window_size:
         return
@@ -626,7 +501,7 @@ await prefix_suffix_sum(array)`,
     return fib
 await dp_fibonacci(20)`,
             
-            // Stage 5: Optimization & Advanced Sorting
+            // Optimization & Advanced Sorting
             quickSort: `async def quick_sort(arr):
     async def partition(items, left, right):
         pivot = items[(left + right) // 2]
@@ -707,7 +582,7 @@ await merge_sort(array)`,
     return arr
 await heap_sort(array)`,
 
-            bubble: `async def bubble_sort(arr):
+            bubbleSort: `async def bubble_sort(arr):
     for i in range(len(arr) - 1):
         for j in range(len(arr) - i - 1):
             await visualize_step(arr, [j, j+1], [])
@@ -718,7 +593,7 @@ await heap_sort(array)`,
     await visualize_step(arr, [], list(range(len(arr))))
 await bubble_sort(array)`,
         
-        selection: `async def selection_sort(arr):
+        selectionSort: `async def selection_sort(arr):
     for i in range(len(arr) - 1):
         min_index = i
         for j in range(i + 1, len(arr)):
@@ -732,7 +607,7 @@ await bubble_sort(array)`,
     await visualize_step(arr, [], list(range(len(arr))))
 await selection_sort(array)`,
         
-        insertion: `async def insertion_sort(arr):
+        insertionSort: `async def insertion_sort(arr):
     for i in range(1, len(arr)):
         key = arr[i]
         j = i - 1
@@ -768,36 +643,6 @@ await insertion_sort(array)`,
     return -1
 await binary_search(array, array[len(array)//2])`,
             
-            rotatedBinarySearch: `async def rotated_binary_search(arr, target):
-    left = 0
-    right = len(arr) - 1
-    while left <= right:
-        mid = (left + right) // 2
-        await visualize_step(arr, [mid], [])
-        if arr[mid] == target:
-            await visualize_step(arr, [mid], [mid])
-            return mid
-        if arr[left] <= arr[mid]:
-            if arr[left] <= target < arr[mid]:
-                right = mid - 1
-            else:
-                left = mid + 1
-        else:
-            if arr[mid] < target <= arr[right]:
-                left = mid + 1
-            else:
-                right = mid - 1
-    return -1
-await rotated_binary_search(array, array[0])`,
-            
-            search2D: `async def search_2d(matrix, target):
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            await visualize_step(sum(matrix, []), [i * len(matrix[i]) + j], [])
-            if matrix[i][j] == target:
-                return (i, j)
-    return (-1, -1)
-await search_2d([[1,2,3],[4,5,6],[7,8,9]], 5)`,
             
             // Stage 7: Array Applications in DSA
             kmpSearch: `async def kmp_search(text, pattern):
@@ -835,18 +680,8 @@ await search_2d([[1,2,3],[4,5,6],[7,8,9]], 5)`,
     return -1
 await kmp_search("abxabcabcabyabxabxab", "abcabc")`,
             
-            maxSubArray: `async def max_sub_array(arr):
-    max_so_far = arr[0]
-    max_ending_here = arr[0]
-    for i in range(1, len(arr)):
-        max_ending_here = max(arr[i], max_ending_here + arr[i])
-        max_so_far = max(max_so_far, max_ending_here)
-        await visualize_step(arr, [i], [])
-        print("max so far " + str(max_so_far))
-    return max_so_far
-await max_sub_array(array)`,
             
-            // Stage 9: Advanced Topics (Optional)
+            // Advanced Topics (Optional)
             matrixMultiply: `async def matrix_multiply(A, B):
     await visualize_step([0] * len(array), [], [])
     result = [[0 for _ in range(len(B[0]))] for _ in range(len(A))]
@@ -858,15 +693,6 @@ await max_sub_array(array)`,
     return result
 await matrix_multiply([[1,2],[3,4]], [[5,6],[7,8]])`,
             
-            sparseArray: `async def sparse_array(matrix):
-    sparse = []
-    for i in range(len(matrix)):
-        for j in range(len(matrix[i])):
-            if matrix[i][j] != 0:
-                sparse.append({'row': i, 'col': j, 'value': matrix[i][j]})
-                await visualize_step(sum(matrix, []), [i * len(matrix[i]) + j], [])
-    return sparse
-await sparse_array([[0,0,3],[4,0,0],[0,5,0]])`,
             
             bitManipulation: `async def count_set_bits(n):
     await visualize_step([0] * len(array), [], [])
@@ -891,7 +717,7 @@ await sparse_array([[0,0,3],[4,0,0],[0,5,0]])`,
     await visualize_step(original_bits + [-1], [], [])
     return
 
-await count_set_bits(5)`
+await count_set_bits(77)`
 
         }
     },

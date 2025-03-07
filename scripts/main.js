@@ -64,12 +64,11 @@ document.addEventListener('DOMContentLoaded', function () {
 const dsConfig = {
   array: { 
     algorithms: [
-      'select', 'intro', 'traverse', 'insertionBasic', 'deletion', 'linearSearch',
-      'arrayLength', 'reverse', 'merge', 'rotate', 'slidingWindow',
+      'select', 'insertion', 'deletion', 'linearSearch',
+      'reverse', 'rotate', 'slidingWindow',
       'twoPointers', 'prefixSuffixSum', 'dpFibonacci', 'quickSort',
-      'mergeSort', 'heapSort', , 'bubble', 'selection', 'insertion', 'binarySearch', 'rotatedBinarySearch',
-      'search2D', 'kmpSearch', 'maxSubArray', 'matrixMultiply',
-      'sparseArray', 'bitManipulation'
+      'mergeSort', 'heapSort', 'bubbleSort', 'selectionSort', 'insertionSort', 'binarySearch', 
+      'kmpSearch', 'matrixMultiply', 'bitManipulation'
     ]
   },  
   string: { 
