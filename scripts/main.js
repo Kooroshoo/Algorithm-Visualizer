@@ -12,18 +12,29 @@ window.logToConsole = function (message) {
 
 // Attach event listeners that are not directly tied to the editor.
 document.addEventListener('DOMContentLoaded', function () {
+  // Bind existing controls for arrays
   document.getElementById('run-code').addEventListener('click', window.runCode);
   document.getElementById('generate').addEventListener('click', function() {
-    window.generateArray();  
+      window.generateArray();  
   });
   document.getElementById('speed').addEventListener('input', e => {
-    // Moving the slider to the right speeds up execution.
-    window.speed = 1000 - parseInt(e.target.value) + 1;
+      window.speed = 1000 - parseInt(e.target.value) + 1;
   });
 
-  // Generate an initial array when the page loads.
+  // Bind controls for string operations
+  document.getElementById('string-generate').addEventListener('click', function() {
+      window.generateString(); // Generate a random string on click
+  });
+
+  document.getElementById('string-speed').addEventListener('input', e => {
+      window.stringSpeed = 1000 - parseInt(e.target.value) + 1;
+  });
+
+  // Generate an initial array and string when the page loads
   window.generateArray();
+  window.generateString();
 });
+
 
 
 document.addEventListener('DOMContentLoaded', function () {

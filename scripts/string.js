@@ -1,3 +1,5 @@
+// string.js
+
 document.addEventListener('DOMContentLoaded', function () {
     const stringContainer = document.getElementById('string-container');
     window.currentString = "";
@@ -26,14 +28,12 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
       `).join('');
       window.logToConsole(Array.isArray(message) ? message.join('') : String(message));
-      await new Promise(resolve => setTimeout(resolve, window.speed || 500));
+      await new Promise(resolve => setTimeout(resolve, window.stringSpeed  || 500));
     };
   
     document.getElementById('string-input').addEventListener('input', e => {
       window.currentString = e.target.value;
       window.visualizeStringStep(window.currentString);
     });
-  
-    window.generateString();
   });
   
