@@ -60,7 +60,7 @@ window.runCode = async function () {
             pyodide.globals.set('Node', window.ListNode);
 
             // Update visualize_step binding
-            pyodide.globals.set('visualize_step', 
+            pyodide.globals.set('visualize_step2', 
               (node, found=false, start_node=window.head) => 
                   visualizeStep(node, found, start_node)
             );

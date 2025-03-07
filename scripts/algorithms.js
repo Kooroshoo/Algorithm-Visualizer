@@ -982,10 +982,10 @@ async def insertion(value):
     else:
         current = head
         while current.next:
-            await visualize_step(current)
+            await visualize_step2(current)
             current = current.next
         current.next = new_node
-    await visualize_step(None)
+    await visualize_step2(None)
 
 await insertion(__import__('random').randint(1, 100))`,
 
@@ -1001,17 +1001,17 @@ async def deletion(value):
 
     if head.value == value:
         head = head.next
-        await visualize_step(None)
+        await visualize_step2(None)
         return
 
     current = head
     while current.next and current.next.value != value:
-        await visualize_step(current)
+        await visualize_step2(current)
         current = current.next
 
     if current.next:
         current.next = current.next.next
-        await visualize_step(None)
+        await visualize_step2(None)
 
 await deletion(5)`,  
 
@@ -1025,13 +1025,13 @@ async def traversal(value):
     position = 0
     
     while current:
-        await visualize_step(current)
+        await visualize_step2(current)
         if current.value == value:
-            await visualize_step(current, True)
+            await visualize_step2(current, True)
             return position
         current = current.next
         position += 1
-    await visualize_step(None)
+    await visualize_step2(None)
     return -1
 
 await traversal(5)`,  
@@ -1051,10 +1051,10 @@ async def reversal():
         current.next = prev
         prev = current
         current = next_node
-        await visualize_step(prev, False, prev)
+        await visualize_step2(prev, False, prev)
     
     head = prev
-    await visualize_step(None, False, head)
+    await visualize_step2(None, False, head)
 
 await reversal()`
         }
