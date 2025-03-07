@@ -201,18 +201,20 @@ h2 {
     color: white;
     text-decoration: none;
     gap: 8px;
-}
-
-.github-link:hover {
-    background-color: #343541;
-    border-radius: 5px;
-}
-
-.github-icon {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-}
+    transition: all 0.2s ease;
+  }
+  
+  .github-icon {
+    width: 25px;
+    height: 25px;
+    fill: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .github-link:hover .github-icon {
+    fill: var(--highlight);
+    transform: scale(1.2);
+  }
 
 .selectors {
     display: flex;
