@@ -39,10 +39,21 @@ document.addEventListener('DOMContentLoaded', function () {
       window.linkedListSpeed = 1000 - parseInt(e.target.value) + 1;
   });
 
+  // Bind controls for tree operations
+  document.getElementById('tree-generate').addEventListener('click', function() {
+    window.generateTree(); // Generate a random tree on click
+  });
+
+  document.getElementById('tree-speed-control').addEventListener('input', e => {
+    window.treeSpeed = 1000 - parseInt(e.target.value) + 1;
+  });
+
+
   // Generate an initial array and string when the page loads
   window.generateArray();
   window.generateString();
   window.generateLinkedList();
+  window.generateTree();
 });
 
 
@@ -53,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
       array: visualizeArrayStep,
       string: visualizeStringStep,
       linkedList: visualizeLinkedListStep,
-      // tree: visualizeTreeStep,
+      tree: visualizeTreeStep,
       // graph: visualizeGraphStep
   };
 
@@ -88,7 +99,7 @@ const dsConfig = {
     algorithms: ['insertion', 'deletion', 'traversal', 'reversal'] 
   },
   tree: { 
-    algorithms: ['BFS', 'DFS', 'inOrder', 'preOrder', 'postOrder'] 
+    algorithms: ['bst', 'traversal', 'BFS', 'DFS', 'inOrder', 'preOrder', 'postOrder'] 
   },
   graph: { 
     algorithms: ['BFS', 'DFS', 'dijkstra'] 
@@ -157,7 +168,7 @@ function updateVisualizationContainers(ds) {
     array: 'array-container-wrapper',
     string: 'string-container-wrapper',
     linkedList: 'linked-list-container-wrapper',
-    tree: 'treeContainer',
+    tree: 'tree-container-wrapper',
     graph: 'graphContainer'
   };
 
@@ -183,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'array-container-wrapper',
     'string-container-wrapper',
     'linked-list-container-wrapper',
-    'treeContainer',
+    'tree-container-wrapper',
     'graphContainer'
   ];
 

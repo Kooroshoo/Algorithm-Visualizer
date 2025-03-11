@@ -65,6 +65,9 @@ window.runCode = async function () {
                   visualizeStep(node, found, start_node)
             );
 
+            pyodide.globals.set('visualize_step3', (value, action) => visualizeTreeStep(value, action));
+
+
           pyodide.globals.set('log_to_console', logToConsole);
           pyodide.globals.set('current_string', window.currentString);
           

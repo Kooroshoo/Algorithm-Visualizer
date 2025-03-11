@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/string.css">
   <link rel="stylesheet" href="styles/linked-list.css">
+  <link rel="stylesheet" href="styles/tree.css">
 </head>
 <body>
   <header>
@@ -93,7 +94,20 @@
         </div>
       </div>
 
-      <div id="treeContainer" class="data-container"><h1>Work in progress</h1></div>
+      <!-- Tree Container -->
+      <div id="tree-container-wrapper" class="data-container">
+        <div id="treeContainer" class="data-container"></div>
+        <div id="tree-controls">
+            <div id="tree-generate-container">
+                <button id="tree-generate">Generate Tree</button>
+            </div>
+            <div id="tree-speed-control">
+                <label for="tree-speed">Speed:</label>
+                <input type="range" id="tree-speed" min="50" max="1000" step="50" value="500" />
+            </div>
+        </div>
+      </div>
+
       <div id="graphContainer" class="data-container"><h1>Work in progress</h1></div>
 
       <div id="console"></div>
@@ -106,6 +120,7 @@
   <script src="scripts/array.js"></script>
   <script src="scripts/string.js"></script>
   <script src="scripts/linked-list.js"></script>
+  <script src="scripts/tree.js"></script>
   <script src="scripts/main.js"></script>
 </body>
 </html>

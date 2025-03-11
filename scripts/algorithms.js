@@ -1058,9 +1058,249 @@ async def reversal():
 
 await reversal()`
         }
+    },
+
+    tree: {
+        javascript: {
+          bst: `class Node {
+        constructor(value) {
+            this.value = value;
+            this.left = null;
+            this.right = null;
+        }
     }
+    
+    async function insert(root, value) {
+        if (!root) {
+            await visualizeStep(value, 'insert');
+            return new Node(value);
+        }
+        
+        await visualizeStep(root.value, 'visit');
+        
+        if (value < root.value) {
+            root.left = await insert(root.left, value);
+        } else {
+            root.right = await insert(root.right, value);
+        }
+        return root;
+    }
+    
+    async function main() {
+        let root = null;
+        const values = [5, 3, 7, 2, 4, 6, 8];
+        for (const value of values) {
+            root = await insert(root, value);
+        }
+        await visualizeStep(null, 'complete');
+    }
+    main();`,
+    
+          traversal: `async function inOrder(node) {
+        if (node) {
+            await inOrder(node.left);
+            await visualizeStep(node.value, 'visit');
+            await inOrder(node.right);
+        }
+    }
+    
+    async function main() {
+        await inOrder(tree);
+        await visualizeStep(null, 'complete');
+    }
+    main();`,
+    
+          BFS: `async function BFS(root) {
+        if (!root) return;
+        const queue = [root];
+        while (queue.length > 0) {
+            const node = queue.shift();
+            await visualizeStep(node.value, 'visit');
+            if (node.left) queue.push(node.left);
+            if (node.right) queue.push(node.right);
+        }
+        await visualizeStep(null, 'complete');
+    }
+    
+    async function main() {
+        await BFS(tree);
+    }
+    main();`,
+    
+          DFS: `async function DFS(root) {
+        if (!root) return;
+        const stack = [root];
+        while (stack.length > 0) {
+            const node = stack.pop();
+            await visualizeStep(node.value, 'visit');
+            if (node.right) stack.push(node.right);
+            if (node.left) stack.push(node.left);
+        }
+        await visualizeStep(null, 'complete');
+    }
+    
+    async function main() {
+        await DFS(tree);
+    }
+    main();`,
+    
+          inOrder: `async function inOrder(node) {
+        if (node) {
+            await inOrder(node.left);
+            await visualizeStep(node.value, 'visit');
+            await inOrder(node.right);
+        }
+    }
+    
+    async function main() {
+        await inOrder(tree);
+        await visualizeStep(null, 'complete');
+    }
+    main();`,
+    
+          preOrder: `async function preOrder(node) {
+        if (node) {
+            await visualizeStep(node.value, 'visit');
+            await preOrder(node.left);
+            await preOrder(node.right);
+        }
+    }
+    
+    async function main() {
+        await preOrder(tree);
+        await visualizeStep(null, 'complete');
+    }
+    main();`,
+    
+          postOrder: `async function postOrder(node) {
+        if (node) {
+            await postOrder(node.left);
+            await postOrder(node.right);
+            await visualizeStep(node.value, 'visit');
+        }
+    }
+    
+    async function main() {
+        await postOrder(tree);
+        await visualizeStep(null, 'complete');
+    }
+    main();`
+        },
+    
+        python: {
+            bst: `class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+async def insert(root, value):
+    if not root:
+        await visualize_step3(value, 'insert')
+        return Node(value)
+    
+    await visualize_step3(root.value, 'visit')
+    
+    if value < root.value:
+        root.left = await insert(root.left, value)
+    else:
+        root.right = await insert(root.right, value)
+    return root
+
+async def main():
+    root = None
+    values = [5, 3, 7, 2, 4, 6, 8]
+    for value in values:
+        root = await insert(root, value)
+    await visualize_step3(None, 'complete')
+
+await main()`,
+            
+            traversal: `async def in_order(node):
+          if node:
+              await in_order(node.left)
+              await visualize_step3(node.value, 'visit')
+              await in_order(node.right)
+      
+      async def main():
+          await in_order(tree)
+          await visualize_step3(None, 'complete')
+      
+      await main()`,
+            
+            BFS: `async def bfs(root):
+          if not root:
+              return
+          queue = [root]
+          while queue:
+              node = queue.pop(0)
+              await visualize_step3(node.value, 'visit')
+              if node.left:
+                  queue.append(node.left)
+              if node.right:
+                  queue.append(node.right)
+          await visualize_step3(None, 'complete')
+      
+      await bfs(tree)`,
+            
+            DFS: `async def dfs(root):
+          if not root:
+              return
+          stack = [root]
+          while stack:
+              node = stack.pop()
+              await visualize_step3(node.value, 'visit')
+              if node.right:
+                  stack.append(node.right)
+              if node.left:
+                  stack.append(node.left)
+          await visualize_step3(None, 'complete')
+      
+      await dfs(tree)`,
+            
+            inOrder: `async def in_order(node):
+          if node:
+              await in_order(node.left)
+              await visualize_step3(node.value, 'visit')
+              await in_order(node.right)
+      
+      async def main():
+          await in_order(tree)
+          await visualize_step3(None, 'complete')
+      
+      await main()`,
+            
+            preOrder: `async def pre_order(node):
+          if node:
+              await visualize_step3(node.value, 'visit')
+              await pre_order(node.left)
+              await pre_order(node.right)
+      
+      async def main():
+          await pre_order(tree)
+          await visualize_step3(None, 'complete')
+      
+      await main()`,
+            
+            postOrder: `async def post_order(node):
+          if node:
+              await post_order(node.left)
+              await post_order(node.right)
+              await visualize_step3(node.value, 'visit')
+      
+      async def main():
+          await post_order(tree)
+          await visualize_step3(None, 'complete')
+      
+      await main()`
+          }
+        }
 
 
-};
+      
+    };
+    
+
+
     
 
