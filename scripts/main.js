@@ -48,12 +48,22 @@ document.addEventListener('DOMContentLoaded', function () {
     window.treeSpeed = 1000 - parseInt(e.target.value) + 1;
   });
 
+  // Bind controls for graph operations.
+  document.getElementById('generate-graph').addEventListener('click', function() {
+    window.generateGraph();
+  });
+  
+  document.getElementById('graph-speed-control').addEventListener('input', e => {
+    window.graphSpeed = 1000 - parseInt(e.target.value) + 1;
+  });
+
 
   // Generate an initial array and string when the page loads
   window.generateArray();
   window.generateString();
   window.generateLinkedList();
   window.generateTree();
+  window.generateGraph();
 });
 
 
@@ -65,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
       string: visualizeStringStep,
       linkedList: visualizeLinkedListStep,
       tree: visualizeTreeStep,
-      // graph: visualizeGraphStep
+      graph: visualizeGraphStep
   };
 
   // Generalized visualizeStep function
@@ -102,7 +112,7 @@ const dsConfig = {
     algorithms: ['bst', 'traversal', 'BFS', 'DFS', 'inOrder', 'preOrder', 'postOrder'] 
   },
   graph: { 
-    algorithms: ['BFS', 'DFS', 'dijkstra'] 
+    algorithms: ['bfs', 'dfs', 'dijkstra'] 
   }
 };
 
@@ -169,7 +179,7 @@ function updateVisualizationContainers(ds) {
     string: 'string-container-wrapper',
     linkedList: 'linked-list-container-wrapper',
     tree: 'tree-container-wrapper',
-    graph: 'graphContainer'
+    graph: 'graph-container-wrapper'
   };
 
   // Hide all containers first
@@ -195,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'string-container-wrapper',
     'linked-list-container-wrapper',
     'tree-container-wrapper',
-    'graphContainer'
+    'graph-container-wrapper'
   ];
 
   containers.forEach(containerId => {

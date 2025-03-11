@@ -67,6 +67,9 @@ window.runCode = async function () {
 
             pyodide.globals.set('visualize_step3', (value, action) => visualizeTreeStep(value, action));
 
+            pyodide.globals.set('graph', graph);
+            pyodide.globals.set('visualize_step4', visualizeGraphStep);
+
 
           pyodide.globals.set('log_to_console', logToConsole);
           pyodide.globals.set('current_string', window.currentString);

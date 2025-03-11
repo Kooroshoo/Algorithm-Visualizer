@@ -1294,7 +1294,148 @@ await main()`,
       
       await main()`
           }
+        },
+
+    graph: {
+        javascript: {
+            bfs: `async function bfs(startNode) {
+        const queue = [startNode];
+        const visited = new Set([startNode]);
+        
+        while (queue.length > 0) {
+            const current = queue.shift();
+            await visualizeStep(current, 'active');
+            
+            for (const neighbor of graph.adjacencyList[current]) {
+                if (!visited.has(neighbor)) {
+                    visited.add(neighbor);
+                    queue.push(neighbor);
+                    await visualizeStep(neighbor, 'visited');
+                }
+            }
+            await visualizeStep(current, 'processed');
         }
+    }
+    bfs(0);`,
+    
+            dfs: `async function dfs(startNode) {
+        const stack = [startNode];
+        const visited = new Set();
+        
+        while (stack.length > 0) {
+            const current = stack.pop();
+            if (visited.has(current)) continue;
+            
+            visited.add(current);
+            await visualizeStep(current, 'active');
+            
+            for (const neighbor of graph.adjacencyList[current]) {
+                if (!visited.has(neighbor)) {
+                    stack.push(neighbor);
+                    await visualizeStep(neighbor, 'visited');
+                }
+            }
+            await visualizeStep(current, 'processed');
+        }
+    }
+    dfs(0);`,
+    
+            dijkstra: `async function dijkstra(startNode) {
+        const distances = {};
+        const prev = {};
+        const unvisited = new Set();
+        
+        graph.nodes.forEach(node => {
+            distances[node.id] = Infinity;
+            prev[node.id] = null;
+            unvisited.add(node.id);
+        });
+        distances[startNode] = 0;
+        
+        while (unvisited.size > 0) {
+            const current = [...unvisited].reduce((a, b) => distances[a] < distances[b] ? a : b);
+            unvisited.delete(current);
+            await visualizeStep(current, 'active');
+            
+            for (const edge of graph.adjacencyList[current]) {
+                const alt = distances[current] + edge.weight;
+                if (alt < distances[edge.to]) {
+                    distances[edge.to] = alt;
+                    prev[edge.to] = current;
+                    await visualizeStep(edge.to, 'visited');
+                }
+            }
+            await visualizeStep(current, 'processed');
+        }
+    }
+    dijkstra(0);`
+        },
+        python: {
+            bfs: `async def bfs(start_node):
+    queue = [start_node]
+    visited = {start_node}
+
+    while queue:
+        current = queue.pop(0)
+        await visualize_step4(current, 'active')
+        
+        for neighbor in graph.adjacencyList[current]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+                await visualize_step4(neighbor, 'visited')
+        
+    await visualize_step4(current, 'processed')
+          
+await bfs(0)`,
+            
+            dfs: `async def dfs(start_node):
+          stack = [start_node]
+          visited = set()
+          
+          while stack:
+              current = stack.pop()
+              if current in visited:
+                  continue
+                  
+              visited.add(current)
+              await visualize_step4(current, 'active')
+              
+              for neighbor in graph.adjacencyList[current]:
+                  if neighbor not in visited:
+                      stack.append(neighbor)
+                      await visualize_step4(neighbor, 'visited')
+              
+              await visualize_step4(current, 'processed')
+          
+      await dfs(0)`,
+            
+            dijkstra: `async def dijkstra(start_node):
+          distances = {node.id: float('inf') for node in graph.nodes}
+          prev = {node.id: None for node in graph.nodes}
+          unvisited = {node.id for node in graph.nodes}
+          distances[start_node] = 0
+          
+          while unvisited:
+              current = min(unvisited, key=lambda x: distances[x])
+              unvisited.remove(current)
+              await visualize_step4(current, 'active')
+              
+              for edge in graph.adjacencyList[current]:
+                  alt = distances[current] + edge.weight
+                  if alt < distances[edge.to]:
+                      distances[edge.to] = alt
+                      prev[edge.to] = current
+                      await visualize_step4(edge.to, 'visited')
+              
+              await visualize_step4(current, 'processed')
+          
+      await dijkstra(0)`
+          }
+        }
+
+
+
 
 
       
